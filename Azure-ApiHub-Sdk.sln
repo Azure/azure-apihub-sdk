@@ -12,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F766AC
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFD496CE-0E4F-45A6-ABDA-0C151709CC2C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		BuildPackage.cmd = BuildPackage.cmd
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure-ApiHub-Sdk-Samples", "samples\Azure-ApiHub-Sdk-Samples\Azure-ApiHub-Sdk-Samples.csproj", "{99FED33F-B129-4E26-87B1-B7F770489A0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +30,10 @@ Global
 		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

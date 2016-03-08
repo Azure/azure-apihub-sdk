@@ -45,15 +45,8 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
             return json.ToObject<TResult>();
         }
 
-        protected async Task<TResult> SendAsync<TResult>(HttpMethod method, UriTemplate urlTemplate, NameValueCollection parameters = null)
-        {
-            // prepare the url
-            var fullParameters = parameters ?? new NameValueCollection();
-            fullParameters.Add("subscriptionId", this.subscriptionId);
-            fullParameters.Add("location", this.location);
-            fullParameters.Add("apiVersion", ApiVersion);
-            Uri url = urlTemplate.BindByName(_managementEndpointUri, fullParameters);
-
+        protected async Task<TResult> SendAsync<TResult>(HttpMethod method, Uri url)
+        { 
             var request = new HttpRequestMessage(method, url);
             AddAccessToken(request);
 
