@@ -14,7 +14,7 @@
     <releaseNotes></releaseNotes>
   </metadata>
   <files>
-    <file src="src\bin\debug\*.exe" target="tools" />
-    <file src="src\bin\debug\*.dll" target="tools" />
+    <file src="..\src\bin\debug\*.exe" target="tools" />
+    <file src="..\src\bin\debug\*.dll" target="tools" />
   </files>
 </package>
