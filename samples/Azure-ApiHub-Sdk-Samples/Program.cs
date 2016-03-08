@@ -14,7 +14,7 @@ namespace Azure.ApiHub.Sdk.Samples
         private const string location ="brazilsouth";
 
         // look at armclient token to login to AAD and get arm token
-        private const string aadToken = "";
+        private static string aadToken = "";
 
         static void Main(string[] args)
         {
@@ -26,6 +26,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
         private static async Task ListAllApisAsync(string[] args)
         {
+            aadToken = args[0];
             var hub = new ApiHubClient(subscriptionId, resourceGroup, location, aadToken);
 
             // get all Managed APIs
@@ -38,13 +39,14 @@ namespace Azure.ApiHub.Sdk.Samples
                 var connections = await hub.GetConnections(managedApi.Name);
                 foreach (var conn in connections)
                 {
-                    Console.WriteLine("\t\tName:{0}", conn.Name);    
+                    Console.WriteLine("\t\tName:{0}", conn.Name);
                 }
             }
         }
 
         private static async Task GetConnectionKeyAsync(string[] args)
         {
+            aadToken = args[0];
             var hub = new ApiHubClient(subscriptionId, resourceGroup, location, aadToken);
 
             var connections = await hub.GetConnections("dropbox");

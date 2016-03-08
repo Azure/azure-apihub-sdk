@@ -34,7 +34,6 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
             {
                 Id = x.Id,
                 ApiName = api,
-                ConnectionName = x.Name,
                 Name = x.Name
             });
         }
