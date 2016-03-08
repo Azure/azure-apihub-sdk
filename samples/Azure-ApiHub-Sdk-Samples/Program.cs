@@ -10,7 +10,6 @@ namespace Azure.ApiHub.Sdk.Samples
     class Program
     {
         private const string subscriptionId = "83e6374a-dfa5-428b-82ef-eab6c6bdd383";
-        private const string resourceGroup = "AzureFunctions";
         private const string location ="brazilsouth";
 
         // look at armclient token to login to AAD and get arm token
@@ -27,7 +26,7 @@ namespace Azure.ApiHub.Sdk.Samples
         private static async Task ListAllApisAsync(string[] args)
         {
             aadToken = args[0];
-            var hub = new ApiHubClient(subscriptionId, resourceGroup, location, aadToken);
+            var hub = new ApiHubClient(subscriptionId, location, aadToken);
 
             // get all Managed APIs
             var apis = await hub.GetManagedApis();
@@ -47,7 +46,7 @@ namespace Azure.ApiHub.Sdk.Samples
         private static async Task GetConnectionKeyAsync(string[] args)
         {
             aadToken = args[0];
-            var hub = new ApiHubClient(subscriptionId, resourceGroup, location, aadToken);
+            var hub = new ApiHubClient(subscriptionId, location, aadToken);
 
             var connections = await hub.GetConnections("dropbox");
 

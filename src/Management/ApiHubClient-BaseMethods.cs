@@ -20,7 +20,6 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
 
         private string ApiVersion = "2015-08-01-preview"; // add to query string
         private string subscriptionId;
-        private string resourceGroup;
         private string location;
         private string aadToken;
 
@@ -61,10 +60,9 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
             return json.ToObject<TResult>();
         }
 
-        public ApiHubClient(string subscriptionId, string resourceGroup, string location, string aadToken)
+        public ApiHubClient(string subscriptionId, string location, string aadToken)
         {
             this.subscriptionId = subscriptionId;
-            this.resourceGroup = resourceGroup;
             this.location = location;
             this.aadToken = aadToken;
         }
