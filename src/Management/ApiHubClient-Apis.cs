@@ -21,7 +21,6 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
             UriTemplate apisUrl = new UriTemplate("/subscriptions/{subscriptionId}/providers/Microsoft.Web/locations/{location}/managedApis/?api-version={apiVersion}");
             var parameters = new Dictionary<string, string>();
             parameters["subscriptionId"] = this.subscriptionId;
-            parameters["resourceGroup"] = this.resourceGroup;
             parameters["location"] = this.location;
             parameters["apiVersion"] = ApiVersion;
             Uri url = apisUrl.BindByName(_managementEndpointUri, parameters);

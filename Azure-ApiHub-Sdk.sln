@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F766ACD8-0972-4E45-848F-29CDE233F933}"
 	ProjectSection(SolutionItems) = preProject
 		Azure-ApiHub-Sdk.nuspec = Azure-ApiHub-Sdk.nuspec
-		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject

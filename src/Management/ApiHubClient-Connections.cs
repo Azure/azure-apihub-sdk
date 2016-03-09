@@ -22,7 +22,6 @@ namespace Microfoft.Azure.ApiHub.Sdk.Management
             var parameters = new Dictionary<string, string>();
             parameters["apiName"] =  api;
             parameters["subscriptionId"] = this.subscriptionId;
-            parameters["resourceGroup"] = this.resourceGroup;
             parameters["location"] = this.location;
             parameters["apiVersion"] = ApiVersion;
             Uri url = connectionsUrl.BindByName(_managementEndpointUri, parameters);
