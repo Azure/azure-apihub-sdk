@@ -50,6 +50,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cdp\CdpConstants.cs" />
+    <Compile Include="Cdp\CdpHelper.cs" />
+    <Compile Include="Cdp\CdpItemInfo.cs" />
+    <Compile Include="Cdp\CdpItemInfoBase.cs" />
+    <Compile Include="Cdp\CdpSource.cs" />
+    <Compile Include="Cdp\IFileSource.cs" />
+    <Compile Include="Cdp\IFileSourceExtensions.cs" />
+    <Compile Include="Cdp\IFileWatcher.cs" />
+    <Compile Include="Cdp\MetadataResponse.cs" />
+    <Compile Include="Cdp\Poll.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Management\ApiHubClient-Connections.cs" />
