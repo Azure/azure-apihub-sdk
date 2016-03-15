@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Serialization
+namespace Microsoft.Azure.ApiHub.Serialization
 {
     #region Converters
     internal class CamelCasePropertyNamesWithOverridesContractResolver : CamelCasePropertyNamesContractResolver

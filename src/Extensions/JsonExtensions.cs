@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
-using Microfoft.Azure.ApiHub.Sdk.Serialization;
+using Microsoft.Azure.ApiHub.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
