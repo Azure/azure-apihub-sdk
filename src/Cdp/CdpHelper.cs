@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     internal class CdpHelper
     {

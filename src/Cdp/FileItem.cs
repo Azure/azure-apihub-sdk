@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     internal class FileItem : IFileItem
     {

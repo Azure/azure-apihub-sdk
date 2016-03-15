@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     // could be file or folder.
     public interface IItem

@@ -1,4 +1,4 @@
-﻿namespace Microfoft.WindowsAzure.ApiHub.Management.Entities
+﻿namespace Microsoft.Azure.ApiHub.Management.Entities
 {
     public class ConnectionId : ArmResourceId
     {

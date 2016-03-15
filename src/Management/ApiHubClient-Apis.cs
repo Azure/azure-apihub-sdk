@@ -6,11 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microfoft.WindowsAzure.ApiHub.Extensions;
-using Microfoft.WindowsAzure.ApiHub.Management.Entities;
+using Microsoft.Azure.ApiHub.Extensions;
+using Microsoft.Azure.ApiHub.Management.Entities;
 using Newtonsoft.Json.Linq;
 
-namespace Microfoft.WindowsAzure.ApiHub.Management
+namespace Microsoft.Azure.ApiHub.Management
 {
     public partial class ApiHubClient
     {

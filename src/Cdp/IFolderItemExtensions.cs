@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     public static class IFolderItemExtensions
     {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microfoft.WindowsAzure.ApiHub.Management;
-using Microfoft.WindowsAzure.ApiHub;
+using Microsoft.Azure.ApiHub.Management;
+using Microsoft.Azure.ApiHub;
 using System.IO;
 
 namespace Azure.ApiHub.Sdk.Samples

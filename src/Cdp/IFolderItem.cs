@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     // Can represent $root, or a file. 
     // In all cases, the 'path' is relative to this folder. Uses / separator.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microfoft.WindowsAzure.ApiHub
+namespace Microsoft.Azure.ApiHub
 {
     // Raw file protocol from CDP
     // File or Folder
