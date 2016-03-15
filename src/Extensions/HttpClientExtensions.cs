@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Extensions
+namespace Microfoft.WindowsAzure.ApiHub.Extensions
 {
 
     /// <summary>

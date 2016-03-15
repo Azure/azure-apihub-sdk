@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+namespace Microfoft.WindowsAzure.ApiHub
 {
     internal class CdpHelper
     {
@@ -16,6 +16,30 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
         private Uri _runtimeEndpoint;
         private string _accessTokenScheme;
         private string _accessToken;
+
+        public Uri RuntimeEndpoint
+        {
+            get
+            {
+                return _runtimeEndpoint;
+            }
+        }
+
+        public string AccessTokenScheme
+        {
+            get
+            {
+                return _accessTokenScheme;
+            }
+        }
+
+        public string AccessToken
+        {
+            get
+            {
+                return _accessToken;
+            }
+        }
 
         public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken)
         {
@@ -41,7 +65,7 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                throw new HttpRequestException("Request failed for: " + url.AbsolutePath + " message: " + ex.Message);
             }
             return response;
         }
@@ -58,32 +82,46 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
             HttpResponseMessage response = await SendAsync(method, url, content);
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException("REST call failed");
+                if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+
+                throw new HttpRequestException("Request failed for: " + url.AbsolutePath + "response code: " + response.StatusCode);
             }
-            var result = await response.Content.ReadAsByteArrayAsync();
-            return result;
+
+            if (response.Content != null)
+            {
+                var result = await response.Content.ReadAsByteArrayAsync();
+                return result;
+            }
+            else
+            {
+                // empty content
+                return new byte[0];
+            }
         }
 
         public async Task<TResult> DecodeAsync<TResult>(HttpResponseMessage response)
         {
+            if(response.Content == null)
+            {
+                return default(TResult);
+            }
+
             string json = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException("REST call failed");
+                throw new HttpRequestException("Request failed response code: " + response.StatusCode);
             }
             var result = JsonConvert.DeserializeObject<TResult>(json);
             return result;
         }
 
-        public string ToConnectionString()
-        {
-            return string.Format("{0};{1};{2}", _runtimeEndpoint, _accessTokenScheme, _accessToken);
-        }
-
         public Uri MakeUri(string url, params object[] args)
         {
             string x = string.Format(url, args);
-            return new Uri(this._runtimeEndpoint.ToString() + x);
+            return new Uri(this.RuntimeEndpoint.ToString() + x);
         }
 
         private void AddAccessToken(HttpRequestMessage request)

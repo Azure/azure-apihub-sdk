@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Management.Entities
+namespace Microfoft.WindowsAzure.ApiHub.Management.Entities
 {
     public class ArmEnvelope<T> where T : class
     {

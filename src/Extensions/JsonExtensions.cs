@@ -10,7 +10,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Extensions
+namespace Microfoft.WindowsAzure.ApiHub.Extensions
 {
 
     public static class JsonExtensions

@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+namespace Microfoft.WindowsAzure.ApiHub
 {
     // Raw file protocol from CDP
     // File or Folder
-    public class CdpItemInfo : CdpItemInfoBase
+    public class MetadataInfo 
     {
+        public string Id { get; set; }
+
         public string Name { get; set; }
 
         public string DisplayName { get; set; }

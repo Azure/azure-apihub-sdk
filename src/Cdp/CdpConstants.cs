@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+namespace Microfoft.WindowsAzure.ApiHub
 {
     internal static class CdpConstants
     {
@@ -18,7 +18,7 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
         public const string DatasetRoot = "datasets" + DefaultDatasetName;
         public const string FilesRoot = DatasetRoot + "/files";
         public const string FoldersRoot = DatasetRoot + "/folders";
-        public const string RootFolders = DatasetRoot + "/rootfolders";
+        public const string TopMostFolderRoot = DatasetRoot + "/rootfolders";
         public const string TriggersRoot = DatasetRoot + "/triggers";
 
         public const string FileMetadataByPathTemplate = DatasetRoot + "/GetFileByPath?path={0}";

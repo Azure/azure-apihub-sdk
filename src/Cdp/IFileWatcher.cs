@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+namespace Microfoft.WindowsAzure.ApiHub
 {
     public interface IFileWatcher
     {

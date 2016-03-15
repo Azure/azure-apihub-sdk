@@ -52,12 +52,15 @@
   <ItemGroup>
     <Compile Include="Cdp\CdpConstants.cs" />
     <Compile Include="Cdp\CdpHelper.cs" />
-    <Compile Include="Cdp\CdpItemInfo.cs" />
-    <Compile Include="Cdp\CdpItemInfoBase.cs" />
-    <Compile Include="Cdp\CdpSource.cs" />
-    <Compile Include="Cdp\IFileSource.cs" />
-    <Compile Include="Cdp\IFileSourceExtensions.cs" />
+    <Compile Include="Cdp\MetadataInfo.cs" />
+    <Compile Include="Cdp\FileItem.cs" />
+    <Compile Include="Cdp\FolderItem.cs" />
+    <Compile Include="Cdp\IFileItem.cs" />
+    <Compile Include="Cdp\IFolderItemExtensions.cs" />
     <Compile Include="Cdp\IFileWatcher.cs" />
+    <Compile Include="Cdp\IFolderItem.cs" />
+    <Compile Include="Cdp\IItem.cs" />
+    <Compile Include="Cdp\ItemFactory.cs" />
     <Compile Include="Cdp\MetadataResponse.cs" />
     <Compile Include="Cdp\Poll.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="Management\Entities\ArmResourceId.cs" />
     <Compile Include="Management\Entities\ApiId.cs" />
     <Compile Include="Management\Entities\ConnectionId.cs" />
+    <Compile Include="Management\Entities\ConnectionKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Helpers.cs" />
   </ItemGroup>

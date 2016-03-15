@@ -1,4 +1,4 @@
-﻿namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+﻿namespace Microfoft.WindowsAzure.ApiHub
 {
     internal class MetadataResponse
     {

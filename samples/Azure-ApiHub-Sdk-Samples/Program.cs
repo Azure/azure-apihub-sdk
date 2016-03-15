@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microfoft.Azure.ApiHub.Sdk.Management;
-using Microfoft.Azure.ApiHub.Sdk.Cdp;
+using Microfoft.WindowsAzure.ApiHub.Management;
+using Microfoft.WindowsAzure.ApiHub;
+using System.IO;
 
 namespace Azure.ApiHub.Sdk.Samples
 {
@@ -18,15 +19,23 @@ namespace Azure.ApiHub.Sdk.Samples
 
         static void Main(string[] args)
         {
-            // ListAllApisAsync(args).Wait();
-            GetConnectionKeyAsync(args).Wait();
+            if (args.Count() < 1)
+            {
+                Console.WriteLine("AAD token is missing.");
+                return;
+            }
 
+            aadToken = args[0];
+
+            // ListAllApisAsync(aadToken).Wait();
+            GetConnectionKeyAsync(aadToken).Wait();
+
+            Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
         }
 
-        private static async Task ListAllApisAsync(string[] args)
+        private static async Task ListAllApisAsync(string aadToken)
         {
-            aadToken = args[0];
             var hub = new ApiHubClient(subscriptionId, location, aadToken);
 
             // get all Managed APIs
@@ -36,7 +45,7 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Connections for {0}", managedApi.Name);
                 Console.WriteLine("\tId:{0}", managedApi.Id);
 
-                var connections = await hub.GetConnections(managedApi.Name);
+                var connections = await hub.GetConnectionsAsync(managedApi.Name);
                 foreach (var conn in connections)
                 {
                     Console.WriteLine("\t\tName:{0}", conn.Name);
@@ -44,109 +53,258 @@ namespace Azure.ApiHub.Sdk.Samples
             }
         }
 
-        private static async Task GetConnectionKeyAsync(string[] args)
+        private static async Task GetConnectionKeyAsync(string aadToken)
         {
-            if(args.Count() < 1)
-            {
-                Console.WriteLine("AAD token is missing.");
-                return;
-            }
-
-            aadToken = args[0];
             var hub = new ApiHubClient(subscriptionId, location, aadToken);
 
-            var connections = await hub.GetConnections("dropbox");
+            var connections = await hub.GetConnectionsAsync("dropbox");
 
-            Tuple<string, Uri> connectionKeys = await hub.GetConnectionKey(connections.First());
+            var connectionKey = await hub.GetConnectionKeyAsync(connections.First());
 
-            string connectonKey = connectionKeys.Item1;
-            Uri runtimeUrl = connectionKeys.Item2;
-
-            string acsKey = string.Format("{0};Key;{1}", runtimeUrl, connectonKey);
-
-            Console.WriteLine("acs Key: {0}", acsKey);
-
-            var cdpConnectionString = CdpSource.GetConnectionString(runtimeUrl, "Key", connectonKey);
-
-            IFileSource cdp = await CdpSource.ParseAsync(cdpConnectionString);
+            var connectionString = hub.GetConnectionString(connectionKey.RuntimeUri, "Key", connectionKey.Key);
+            var root = ItemFactory.Parse(connectionString);
 
             string cdpTestRoot = "cdpFiles/";
+            var folder = await root.CreateFolderAsync(cdpTestRoot);
 
-            var item = await cdp.CreateAsync(cdpTestRoot + Guid.NewGuid().ToString() + ".txt", Encoding.Default.GetBytes(DateTime.Now.ToString()));
+            await ListTestsAsync(cdpTestRoot, root, folder);
 
-            Console.WriteLine("Created file name: {0}", item.Name);
+            await NonExistenceTestsAsync(cdpTestRoot, root, folder);
 
-            var metadata1 = await cdp.GetMetaDataAsync(cdpTestRoot + item.Name);
-            var metadata2 = await cdp.GetMetaDataAsync(await cdp.GetIdAsync(cdpTestRoot + item.Name));
+            await FileCrudTestsAsync(folder);
 
-            if(item.Name != metadata1.Name || item.Name != metadata2.Name)
+            await FileWatchTestsAsync(folder);
+        }
+
+        private static async Task FileWatchTestsAsync(IFolderItem folder)
+        {
+            bool fileAddedTrigger = false;
+            bool fileUpdatedTrigger = false;
+
+            var poll = folder.CreateNewFileWatcher(
+                (fr) =>
+                {
+                    Console.WriteLine("File {0} was added.", fr.Path);
+                    fileAddedTrigger = true;
+                    return Task.FromResult(0);
+                }, 1);
+
+            var poll2 = folder.CreateUpdateFileWatcher(
+                (fr) =>
+                {
+                    Console.WriteLine("File {0} was updated.", fr.Path);
+                    fileUpdatedTrigger = true;
+                    return Task.FromResult(0);
+                }, 1);
+
+            var newFile = await folder.CreateFileAsync(Guid.NewGuid().ToString());
+            await newFile.WriteAsync(new byte[0]);
+
+            // Adding some wait to make sure triggers are fired.
+            await Task.Delay(1000);
+
+            await newFile.WriteAsync(new byte[1] { 0 });
+
+            // Adding some wait to make sure triggers are fired.
+            await Task.Delay(20000);
+
+            if (!fileAddedTrigger)
             {
-                Console.WriteLine("An error occured. metadata info don't match!");
+                Console.WriteLine("Error: New file was not triggered when a new file was added.");
             }
 
-            var content1 = Encoding.Default.GetString(await cdp.ReadAsync(cdpTestRoot + item.Name));
-            var content2 = Encoding.Default.GetString(await cdp.ReadAsync(await cdp.GetIdAsync(cdpTestRoot + item.Name)));
+            if (!fileUpdatedTrigger)
+            {
+                Console.WriteLine("Error: Update file was not triggered when an existing file was updated.");
+            }
 
-            if( content1 != content2)
-            {
-                Console.WriteLine("An error occured. metadata info don't match!");
-            }
-            else
-            {
-                Console.WriteLine("File content: " + content1);
-            }
+            await newFile.DeleteAsync();
+        }
+
+        private static async Task FileCrudTestsAsync(IFolderItem folder)
+        {
+            var file = await folder.CreateFileAsync(Guid.NewGuid().ToString() + ".txt", true);
+
+            await file.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
+
+            Console.WriteLine("Created file Id: {0}", file.HandleId.Result);
+
+            var content = Encoding.Default.GetString(await file.ReadAsync());
+
+            Console.WriteLine("File content: " + content);
+
+            var metadata = await file.GetMetadataAsync();
+            Console.WriteLine("File last modified date/time " + metadata.LastModified.ToUniversalTime());
 
             await Task.Delay(1000);
 
-            var updatedItem = await cdp.UpdateAsync(await cdp.GetIdAsync(cdpTestRoot + item.Name), Encoding.Default.GetBytes(DateTime.Now.ToString()));
+            await file.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
 
-            if(updatedItem.LastModified.ToUniversalTime() <= item.LastModified.ToUniversalTime())
+            metadata = await file.GetMetadataAsync();
+
+            Console.WriteLine("File {0} updated succesfully!", metadata.Path);
+
+            content = Encoding.Default.GetString(await file.ReadAsync());
+
+            Console.WriteLine("Updated File content: " + content);
+
+            Console.WriteLine("File last modified date/time " + metadata.LastModified.ToUniversalTime());
+
+            await file.DeleteAsync();
+
+            var items = await folder.ListAsync();
+
+            foreach (var item in items)
             {
-                Console.WriteLine("File update for {0} failed!" , item.Name);
-            }
-            else
-            {
-                Console.WriteLine("File {0} updated succesfully!" , item.Name);
-            }
-
-            await cdp.DeleteAsync(await cdp.GetIdAsync(cdpTestRoot + item.Name));
-
-            var deletedItem = await cdp.GetIdAsync(cdpTestRoot + item.Name);
-
-            if(deletedItem != null)
-            {
-                Console.WriteLine("File delete for {0} failed!" , item.Name);
-            }
-            else
-            {
-                Console.WriteLine("File {0} deleted succesfully!" , item.Name);
-            }
-
-            var items = await cdp.ListAsync(null, false);
-            Console.WriteLine("Number of files in the root: " + items.Count());
-
-            items = await cdp.ListAsync(items[0], true);
-            Console.WriteLine("Number of files: " + items.Count());
-
-            var folder = "cdpfiles/nestedfolder";
-            var poll = cdp.CreateNewFileWatcher(folder,
-                (fr) =>
+                if (item.Path.Equals(file.Path, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("File {0} was added." , fr.Name);
-                    return Task.FromResult(0);
-                });
+                    Console.WriteLine("File was not deleted successfully!");
+                    break;
+                }
+            }
+        }
 
-            Console.WriteLine("Waiting for files to be added... Press Enter to continue");
-            Console.ReadLine();
+        private static async Task ListTestsAsync(string cdpTestRoot, IFolderItem root, IFolderItem folder)
+        {
+            var currentList = await folder.ListAsync(false);
+            Console.WriteLine("Number of items in {0} : {1}", folder.Path, currentList.Count());
 
-            //var folder = "test1";
-            //var poll = cdp.CreateUpdateFileWatcher(folder,
-            //    (fr) =>
-            //    {
-            //        Console.WriteLine(fr.Name);
-            //        return Task.FromResult(0);
-            //    });
-            //Console.ReadLine();
+            currentList = await folder.ListAsync(true);
+            Console.WriteLine("Number of items in {0} and all its subfolders: {1}", folder.Path, currentList.Count());
+
+            var nestedFolder = await folder.CreateFolderAsync("nestedFolder");
+
+            currentList = await nestedFolder.ListAsync(false);
+            Console.WriteLine("Number of items in {0} : {1}", nestedFolder.Path, currentList.Count());
+
+            currentList = await nestedFolder.ListAsync(true);
+            Console.WriteLine("Number of items in {0} and all its subfolders: {1}", nestedFolder.Path, currentList.Count());
+
+            folder = await root.CreateFolderAsync(cdpTestRoot);
+            var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
+            currentList = await NestedFolderTwoLevel.ListAsync(true);
+            Console.WriteLine("Number of items in {0} and all its subfolders: {1}", NestedFolderTwoLevel.Path, currentList.Count());
+
+            currentList = await root.ListAsync(false);
+
+            Console.WriteLine("Number of items in root folder {0} : {1}", root.Path, currentList.Count());
+        }
+
+        private static async Task NonExistenceTestsAsync(string cdpTestRoot, IFolderItem root, IFolderItem folder)
+        {
+            // file doesn't exist test 
+            var fileItem = await folder.GetFileItemAsync(Guid.NewGuid().ToString());
+
+            if(fileItem != null)
+            {
+                Console.WriteLine("Error: Files which do not exist should return null when calling GetFileItemAsync");
+            }
+
+            IFolderItem nullFolder = await folder.CreateFolderAsync(string.Empty);
+
+            if(nullFolder != null)
+            {
+                Console.WriteLine("Error: null folder expected.");
+            }
+
+            var nullFile = await folder.CreateFileAsync(string.Empty);
+
+            if (nullFile != null)
+            {
+                Console.WriteLine("Error: null file expected.");
+            }
+
+            var newFolder = await folder.CreateFolderAsync(Guid.NewGuid().ToString());
+
+            // listing items for a folder which doesn't exist
+            var listItems = await newFolder.ListAsync();
+
+            if(listItems.Length > 0)
+            {
+                Console.WriteLine("Error: A folder which doesn't exist returned content.");
+            }
+
+            var newFile = await newFolder.CreateFileAsync(Guid.NewGuid().ToString());
+
+            try
+            {
+                // trying to read from a file which doesn't exist should throw an exception.
+                var bytes = await newFile.ReadAsync();
+            }
+            catch(FileNotFoundException ex)
+            {
+                Console.WriteLine("Expected exception was thrown when attempting to read from a file which doesn't exist.");
+            }
+
+            var metadata = await newFile.GetMetadataAsync();
+
+            if(metadata != null)
+            {
+                Console.WriteLine("Error: Metadata should be null for a file which doesn't exist.");
+            }
+
+            // Deleting for a file which doesn't exist should do nothing.
+            await newFile.DeleteAsync();
+
+            // Writing null or empty should create an empty file
+            await newFile.WriteAsync(null);
+
+            metadata = await newFile.GetMetadataAsync();
+
+            if(metadata == null || metadata.Size > 0)
+            {
+                Console.WriteLine("Error: Unable to create an empty file.");
+            }
+
+            await newFile.WriteAsync(new byte[] { 0 });
+
+            metadata = await newFile.GetMetadataAsync();
+
+            listItems =  await newFolder.ListAsync();
+
+            if(listItems.Length != 1)
+            {
+                Console.WriteLine("Error: there should only be one item in the directory.");
+            }
+
+            await newFile.DeleteAsync();
+
+            listItems = await newFolder.ListAsync();
+
+            if (listItems.Length != 0)
+            {
+                Console.WriteLine("Error: there should be no items in the directory.");
+            }
+
+            string newFolderName = Guid.NewGuid().ToString();
+            string newFileName = Guid.NewGuid().ToString();
+
+            if(folder.FolderExists(newFolderName))
+            {
+                Console.WriteLine("Error: Folder must not yet exist.");
+            }
+
+            if (folder.FileExists(newFileName))
+            {
+                Console.WriteLine("Error: File must not yet exist.");
+            }
+
+            newFile = await folder.CreateFileAsync(newFolderName + "/" + newFileName);
+            await newFile.WriteAsync(null);
+
+            if (!folder.FolderExists(newFolderName))
+            {
+                Console.WriteLine("Error: Folder must now exist.");
+            }
+
+            if (!folder.FileExists(newFolderName + "/" + newFileName))
+            {
+                Console.WriteLine("Error: File must now exist.");
+            }
+
+            await newFile.DeleteAsync();
+
+            // TODO: Cdp needs to support deleting empty folders.
         }
     }
 }

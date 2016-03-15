@@ -7,13 +7,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microfoft.Azure.ApiHub.Sdk.Cdp
+namespace Microfoft.WindowsAzure.ApiHub
 {
-    public class Poll : IFileWatcher, IDisposable
+    public class Poll : IFileWatcher
     {
         internal int _pollIntervalInSeconds;
         internal CdpHelper _cdpHelper;
-        internal Func<CdpItemInfo, Task> _callback;
+        internal Func<IFileItem, Task> _callback;
         internal Task _runTask;
 
         private CancellationTokenSource _cancel = new CancellationTokenSource();
@@ -60,19 +60,16 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
                     }
 
                     // Got a new file 
-                    var item = new CdpItemInfo
+                    var fileItem = new FileItem
                     {
-                        Id = fileId,
-                        Name = fileName,
-                        Path = fullpath,
-                        Etag = etag,
-                        MediaType = contentType                        
+                        _path = fullpath,
+                        _handleId = fileId,
                     };
-
+                    
                     this._totalCounted++;
                     this._mostRecentName = fileName;
 
-                    await _callback(item);
+                    await _callback(fileItem);
                     // CDP only dispatches one at a time, so poll immediately to see if there's more.                         
                 }
                 else if (response.StatusCode == HttpStatusCode.Accepted)
@@ -106,23 +103,5 @@ namespace Microfoft.Azure.ApiHub.Sdk.Cdp
             }
             return null;
         }
-
-        #region IDisposable Support
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if(_cancel != null)
-                {
-                    _cancel.Dispose();
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }
