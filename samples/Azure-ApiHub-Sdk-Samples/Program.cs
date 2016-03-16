@@ -27,11 +27,47 @@ namespace Azure.ApiHub.Sdk.Samples
 
             aadToken = args[0];
 
-            // ListAllApisAsync(aadToken).Wait();
+            //ListAllApisAsync(aadToken).Wait();
+
             GetConnectionKeyAsync(aadToken).Wait();
+            ReadFromWriteToSaasProvidersTestAsync(aadToken, "dropbox", "googledrive").Wait();
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
+        }
+
+        private static async Task ReadFromWriteToSaasProvidersTestAsync(string aadToken, string source, string destination)
+        {
+            var hub = new ApiHubClient(subscriptionId, location, aadToken);
+
+            var connections = await hub.GetConnectionsAsync(source);
+            var connectionKey = await hub.GetConnectionKeyAsync(connections.First());
+            var connectionString = hub.GetConnectionString(connectionKey.RuntimeUri, "Key", connectionKey.Key);
+            var sourceRoot = ItemFactory.Parse(connectionString);
+
+            connections = await hub.GetConnectionsAsync(destination);
+            connectionKey = await hub.GetConnectionKeyAsync(connections.First());
+            connectionString = hub.GetConnectionString(connectionKey.RuntimeUri, "Key", connectionKey.Key);
+            var destinationRoot = ItemFactory.Parse(connectionString);
+
+            string fileName = "test/aaa.txt";
+
+            var sourceFile = await sourceRoot.CreateFileAsync(fileName);
+            await sourceFile.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
+            var sourceContent = await sourceFile.ReadAsync();
+
+            var destinationFile = await destinationRoot.CreateFileAsync(fileName);
+            await destinationFile.WriteAsync(sourceContent);
+            var destinationContent = await destinationFile.ReadAsync();
+
+            if((Encoding.Default.GetString(sourceContent)).Equals((Encoding.Default.GetString(destinationContent))))
+            {
+                Console.WriteLine("Source and destination files match!");
+            }
+            else
+            {
+                Console.WriteLine("Error: Source and destination files do not match!");
+            }
         }
 
         private static async Task ListAllApisAsync(string aadToken)

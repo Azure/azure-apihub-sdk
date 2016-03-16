@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -48,7 +49,7 @@ namespace Microsoft.Azure.ApiHub
             _accessToken = accessToken;
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, HttpContent content = null)
+        public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, byte[] content = null)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, url);
             AddAccessToken(request);
@@ -58,7 +59,7 @@ namespace Microsoft.Azure.ApiHub
             {
                 if (content != null)
                 {
-                    request.Content = content;
+                    request.Content = new ByteArrayContent(content);
                 }
 
                 response = await _httpClient.SendAsync(request);                
@@ -70,19 +71,25 @@ namespace Microsoft.Azure.ApiHub
             return response;
         }
 
-        public async Task<TREsult> SendResultAsync<TREsult>(HttpMethod method, Uri url, HttpContent content = null)
+        public async Task<Tuple<TResult, HttpStatusCode>> SendResultAsync<TResult>(HttpMethod method, Uri url, byte[] content = null)
         {
             HttpResponseMessage response = await SendAsync(method, url, content);
-            var result = await DecodeAsync<TREsult>(response);
-            return result;
+
+            TResult result = default(TResult);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                result = await DecodeAsync<TResult>(response);
+            }
+
+            return new Tuple<TResult, HttpStatusCode>( result, response.StatusCode);
         }
 
-        public async Task<byte[]> SendRawAsync(HttpMethod method, Uri url, HttpContent content = null)
+        public async Task<byte[]> SendRawAsync(HttpMethod method, Uri url, byte[] content = null)
         {
             HttpResponseMessage response = await SendAsync(method, url, content);
             if (!response.IsSuccessStatusCode)
             {
-                if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if(response.StatusCode == HttpStatusCode.NotFound)
                 {
                     return null;
                 }

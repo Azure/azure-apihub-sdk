@@ -171,7 +171,7 @@ namespace Microsoft.Azure.ApiHub
             }
 
             List<IItem> items = new List<IItem>();
-            var itemsArray = await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri);
+            var itemsArray = (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1;
 
             //TODO: check how many nested folders can be supported to avoid stackoverflow.
             if (itemsArray != null && includeSubdirectories)
@@ -330,7 +330,7 @@ namespace Microsoft.Azure.ApiHub
                 return current.Id;
             }
 
-            var itemsArray = await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri);
+            var itemsArray = (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1;
 
             foreach (var item in itemsArray)
             {

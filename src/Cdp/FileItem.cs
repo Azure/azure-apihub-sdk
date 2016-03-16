@@ -115,27 +115,36 @@ namespace Microsoft.Azure.ApiHub
 
             var uri = _cdpHelper.MakeUri(CdpConstants.CreateFileTemplate, folder, name);
 
-            ByteArrayContent content = null;
-            if (contents != null)
-            {
-                content = new ByteArrayContent(contents);
-            }
+            var result = await _cdpHelper.SendResultAsync<MetadataInfo>(HttpMethod.Post, uri, contents);
 
-            _handleId = (await _cdpHelper.SendResultAsync<MetadataInfo>(HttpMethod.Post, uri, content)).Id;
+            // TODO: what to do otherwise? throw an exception?
+            if (result.Item2 == HttpStatusCode.OK)
+            {
+                _handleId = result.Item1.Id;
+            }
+            else if(result.Item2 == HttpStatusCode.Conflict)
+            {
+                //File already exists, trying to update.
+                if(_overwrite)
+                {
+                    _handleId = await HandleId;
+
+                    await UpdateAsync(contents);
+                }
+            }
         }
 
         private async Task UpdateAsync(byte[] contents)
         {
             var uri = _cdpHelper.MakeUri(CdpConstants.FileMetadataByIdTemplate, _handleId);
 
-            ByteArrayContent content = null;
-            if (contents != null)
-            {
-                content = new ByteArrayContent(contents);
-            }
+            var result = await _cdpHelper.SendResultAsync<MetadataInfo>(HttpMethod.Put, uri, contents);
 
             // TODO: it might not be needed to update _handleId since it will most likely not get updated when updating a file.
-            _handleId = (await _cdpHelper.SendResultAsync<MetadataInfo>(HttpMethod.Put, uri, content)).Id;
+            if (result.Item2 == HttpStatusCode.OK)
+            {
+                _handleId = result.Item1.Id;
+            }
         }
     }
 }
