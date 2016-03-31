@@ -29,8 +29,11 @@ namespace Azure.ApiHub.Sdk.Samples
 
             //ListAllApisAsync(aadToken).Wait();
 
-            GetConnectionKeyAsync(aadToken).Wait();
-            ReadFromWriteToSaasProvidersTestAsync(aadToken, "dropbox", "googledrive").Wait();
+            //GetConnectionKeyAsync(aadToken).Wait();
+
+            RunApiHubTests("UseLocalFileSystem=true;Path=C:\\tests").Wait();
+
+            //ReadFromWriteToSaasProvidersTestAsync(aadToken, "dropbox", "googledrive").Wait();
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
@@ -98,6 +101,12 @@ namespace Azure.ApiHub.Sdk.Samples
             var connectionKey = await hub.GetConnectionKeyAsync(connections.First());
 
             var connectionString = hub.GetConnectionString(connectionKey.RuntimeUri, "Key", connectionKey.Key);
+
+            await RunApiHubTests(connectionString);
+        }
+
+        private static async Task RunApiHubTests(string connectionString)
+        {
             var root = ItemFactory.Parse(connectionString);
 
             string cdpTestRoot = "cdpFiles/";
@@ -216,10 +225,10 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await nestedFolder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", nestedFolder.Path, currentList.Count());
 
-            folder = await root.CreateFolderAsync(cdpTestRoot);
-            var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
-            currentList = await NestedFolderTwoLevel.ListAsync(true);
-            Console.WriteLine("Number of items in {0} and all its subfolders: {1}", NestedFolderTwoLevel.Path, currentList.Count());
+            //folder = await root.CreateFolderAsync(cdpTestRoot);
+            //var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
+            //currentList = await NestedFolderTwoLevel.ListAsync(true);
+            //Console.WriteLine("Number of items in {0} and all its subfolders: {1}", NestedFolderTwoLevel.Path, currentList.Count());
 
             currentList = await root.ListAsync(false);
 

@@ -13,24 +13,44 @@ namespace Microsoft.Azure.ApiHub
             Uri runtimeEndpoint;
             string accessTokenScheme;
             string accessToken;
+            string localPath;
+            bool useLocalFileSystem;
 
-            ParseConnectionString(connectionString, out runtimeEndpoint, out accessTokenScheme, out accessToken);
+            ParseConnectionString(connectionString, out runtimeEndpoint, out accessTokenScheme, out accessToken, out useLocalFileSystem, out localPath);
+
+            if (useLocalFileSystem)
+            {
+                return new LocalFolderItem
+                {
+                    _path = localPath
+                };
+            }
 
             var folderItem = New(runtimeEndpoint, accessTokenScheme, accessToken);
 
             return folderItem;
         }
 
-        private static void ParseConnectionString(string connectionString, out Uri runtimeEndpoint, out string accessTokenScheme, out string accessToken)
+        private static void ParseConnectionString(string connectionString, out Uri runtimeEndpoint, out string accessTokenScheme, out string accessToken, out bool useLocalFileSystem, out string localPath)
         {
             //TODO: this needs more clean up.
             runtimeEndpoint = null;
             accessTokenScheme = null;
             accessToken = null;
+            localPath = null;
+
+            useLocalFileSystem = false;
 
             var parts = connectionString.Split(';');
 
-            if (parts.Length != 3)
+            if(connectionString.IndexOf("UseLocalFileSystem", StringComparison.OrdinalIgnoreCase ) != -1)
+            {
+                if (parts.Length != 2)
+                {
+                    throw new FormatException("Invalid connectionstring: " + connectionString);
+                }
+            }
+            else if (parts.Length != 3)
             {
                 throw new FormatException("Invalid connectionstring: " + connectionString);
             }
@@ -58,9 +78,24 @@ namespace Microsoft.Azure.ApiHub
                     case "accesstoken":
                         accessToken = value;
                         break;
+                    case "uselocalfilesystem":
+                        if(value.ToLowerInvariant() == "true")
+                        {
+                            useLocalFileSystem = true;
+                        }
+                        break;
+                    case "path":
+                        localPath = value;
+                        break;
                     default:
                         throw new FormatException("Invalid connectionstring: " + connectionString);
                 }
+            }
+
+            // Path is required when using local file system
+            if (useLocalFileSystem && string.IsNullOrEmpty(localPath))
+            {
+                throw new FormatException("Invalid connectionstring: " + connectionString);
             }
         }
 

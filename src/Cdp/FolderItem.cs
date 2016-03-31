@@ -134,7 +134,7 @@ namespace Microsoft.Azure.ApiHub
         public Task<MetadataInfo> GetMetadataAsync()
         {
             //metadata not supported for folders
-            return null;
+            return Task.FromResult<MetadataInfo>(null);
         }
 
         public async Task<IItem[]> ListAsync(bool includeSubdirectories = false)

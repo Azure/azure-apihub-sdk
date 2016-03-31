@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.ApiHub
 {
-    public class Poll : IFileWatcher
+    internal class Poll : IFileWatcher
     {
         internal int _pollIntervalInSeconds;
         internal CdpHelper _cdpHelper;
@@ -87,8 +87,10 @@ namespace Microsoft.Azure.ApiHub
                     await Task.Delay(delay);
                 }
                 else {
+                    await Task.Delay(_pollIntervalInSeconds * 2);
+                    // TODO: Investigate other status codes being returned.
                     // Stop polling. 
-                    return;
+                    // return;
                 }
             }
         }

@@ -7,8 +7,8 @@
     <ProjectGuid>{F8356D27-805D-4ECD-95BF-8CC08063EB02}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microfoft.Azure.ApiHub.Sdk</RootNamespace>
-    <AssemblyName>Azure-ApiHub-Sdk</AssemblyName>
+    <RootNamespace>Microsoft.Azure.ApiHub.Sdk</RootNamespace>
+    <AssemblyName>Microsoft.Azure.ApiHub.Sdk</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,6 +52,9 @@
   <ItemGroup>
     <Compile Include="Cdp\CdpConstants.cs" />
     <Compile Include="Cdp\CdpHelper.cs" />
+    <Compile Include="Cdp\LocalFileItem.cs" />
+    <Compile Include="Cdp\LocalFolderItem.cs" />
+    <Compile Include="Cdp\LocalPoll.cs" />
     <Compile Include="Cdp\MetadataInfo.cs" />
     <Compile Include="Cdp\FileItem.cs" />
     <Compile Include="Cdp\FolderItem.cs" />

@@ -10,6 +10,7 @@ namespace Microsoft.Azure.ApiHub
     {
         public const int DefaultFileWatcherIntervalInSeconds = 30;
 
+        public const string LocalFileSystemConnectionStringTemplate = "UseLocalFileSystem={0};Path={1}";
         public const string CdpConnectionStringTemplate = "Endpoint={0};Scheme={1};AccessToken={2}";
 
         public const string DatasetMetadata= "/$metadata.json/datasets";

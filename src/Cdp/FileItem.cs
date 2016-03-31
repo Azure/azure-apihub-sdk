@@ -48,7 +48,13 @@ namespace Microsoft.Azure.ApiHub
         {
             if(string.IsNullOrEmpty(_handleId))
             {
-                return;
+                _handleId = await HandleId;
+
+                // if _handleId is null we make one attempt to populate it.
+                if (string.IsNullOrEmpty(_handleId))
+                {
+                    return;
+                }
             }
 
             var uri = _cdpHelper.MakeUri(CdpConstants.FileMetadataByIdTemplate, _handleId);
