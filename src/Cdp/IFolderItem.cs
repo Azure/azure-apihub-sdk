@@ -25,20 +25,20 @@ namespace Microsoft.Azure.ApiHub
         Task<IFolderItem> GetFolderItemAsync(string path);
 
         /// <summary>
-        /// Creates the file asynchronous.
+        /// Gets a reference to a file asynchronous.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="overwrite">if set to <c>true</c> [overwrite].</param>
         /// <returns></returns>
-        Task<IFileItem> CreateFileAsync(string path, bool overwrite = true);
+        Task<IFileItem> GetFileReferenceAsync(string path, bool overwrite = true);
 
         /// <summary>
-        /// Creates the folder asynchronous.
+        /// Gets a reference to a folder asynchronous.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="overwrite">if set to <c>true</c> [overwrite].</param>
         /// <returns></returns>
-        Task<IFolderItem> CreateFolderAsync(string path);
+        Task<IFolderItem> GetFolderReferenceAsync(string path);
 
         /// <summary>
         /// Lists the files asynchronous.

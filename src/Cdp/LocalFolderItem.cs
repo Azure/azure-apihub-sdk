@@ -28,7 +28,7 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public Task<IFileItem> CreateFileAsync(string path, bool overwrite = true)
+        public Task<IFileItem> GetFileReferenceAsync(string path, bool overwrite = true)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.ApiHub
                 });
         }
 
-        public Task<IFolderItem> CreateFolderAsync(string path)
+        public Task<IFolderItem> GetFolderReferenceAsync(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {

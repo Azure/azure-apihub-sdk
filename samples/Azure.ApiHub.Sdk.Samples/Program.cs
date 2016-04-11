@@ -55,11 +55,11 @@ namespace Azure.ApiHub.Sdk.Samples
 
             string fileName = "test/aaa.txt";
 
-            var sourceFile = await sourceRoot.CreateFileAsync(fileName);
+            var sourceFile = await sourceRoot.GetFileReferenceAsync(fileName);
             await sourceFile.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
             var sourceContent = await sourceFile.ReadAsync();
 
-            var destinationFile = await destinationRoot.CreateFileAsync(fileName);
+            var destinationFile = await destinationRoot.GetFileReferenceAsync(fileName);
             await destinationFile.WriteAsync(sourceContent);
             var destinationContent = await destinationFile.ReadAsync();
 
@@ -110,7 +110,7 @@ namespace Azure.ApiHub.Sdk.Samples
             var root = ItemFactory.Parse(connectionString);
 
             string cdpTestRoot = "cdpFiles/nested/";
-            var folder = await root.CreateFolderAsync(cdpTestRoot);
+            var folder = await root.GetFolderReferenceAsync(cdpTestRoot);
 
             await ListTestsAsync(cdpTestRoot, root, folder);
 
@@ -142,7 +142,7 @@ namespace Azure.ApiHub.Sdk.Samples
                     return Task.FromResult(0);
                 }, 1);
 
-            var newFile = await folder.CreateFileAsync(Guid.NewGuid().ToString());
+            var newFile = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString());
             await newFile.WriteAsync(new byte[0]);
 
             // Adding some wait to make sure triggers are fired.
@@ -168,7 +168,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
         private static async Task FileCrudTestsAsync(IFolderItem folder)
         {
-            var file = await folder.CreateFileAsync(Guid.NewGuid().ToString() + ".txt", true);
+            var file = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString() + ".txt", true);
 
             await file.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
 
@@ -217,7 +217,7 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await folder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", folder.Path, currentList.Count());
 
-            var nestedFolder = await folder.CreateFolderAsync("nestedFolder");
+            var nestedFolder = await folder.GetFolderReferenceAsync("nestedFolder");
 
             currentList = await nestedFolder.ListAsync(false);
             Console.WriteLine("Number of items in {0} : {1}", nestedFolder.Path, currentList.Count());
@@ -225,7 +225,7 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await nestedFolder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", nestedFolder.Path, currentList.Count());
 
-            folder = await root.CreateFolderAsync(cdpTestRoot);
+            folder = await root.GetFolderReferenceAsync(cdpTestRoot);
             var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
 
             if (NestedFolderTwoLevel != null)
@@ -249,21 +249,21 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: Files which do not exist should return null when calling GetFileItemAsync");
             }
 
-            IFolderItem nullFolder = await folder.CreateFolderAsync(string.Empty);
+            IFolderItem nullFolder = await folder.GetFolderReferenceAsync(string.Empty);
 
             if(nullFolder != null)
             {
                 Console.WriteLine("Error: null folder expected.");
             }
 
-            var nullFile = await folder.CreateFileAsync(string.Empty);
+            var nullFile = await folder.GetFileReferenceAsync(string.Empty);
 
             if (nullFile != null)
             {
                 Console.WriteLine("Error: null file expected.");
             }
 
-            var newFolder = await folder.CreateFolderAsync(Guid.NewGuid().ToString());
+            var newFolder = await folder.GetFolderReferenceAsync(Guid.NewGuid().ToString());
 
             // listing items for a folder which doesn't exist
             var listItems = await newFolder.ListAsync();
@@ -273,7 +273,7 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: A folder which doesn't exist returned content.");
             }
 
-            var newFile = await newFolder.CreateFileAsync(Guid.NewGuid().ToString());
+            var newFile = await newFolder.GetFileReferenceAsync(Guid.NewGuid().ToString());
 
             try
             {
@@ -338,7 +338,7 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: File must not yet exist.");
             }
 
-            newFile = await folder.CreateFileAsync(newFolderName + "/" + newFileName);
+            newFile = await folder.GetFileReferenceAsync(newFolderName + "/" + newFileName);
             await newFile.WriteAsync(null);
 
             if (!folder.FolderExists(newFolderName))

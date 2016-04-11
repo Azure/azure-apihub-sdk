@@ -33,8 +33,8 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             string cdpTestRoot = "tests/" + Guid.NewGuid().ToString();
             string fileName = Guid.NewGuid().ToString();
 
-            var folder = await _rootFolder.CreateFolderAsync(cdpTestRoot);
-            var file = await folder.CreateFileAsync(fileName);
+            var folder = await _rootFolder.GetFolderReferenceAsync(cdpTestRoot);
+            var file = await folder.GetFileReferenceAsync(fileName);
             await file.WriteAsync(new byte[] { });
 
             IItem[] currentList = await folder.ListAsync(false);
@@ -43,8 +43,8 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             currentList = await folder.ListAsync(true);
             Assert.Equal(currentList.Length, 1);
 
-            var nestedFolder = await folder.CreateFolderAsync("nestedFolder");
-            var file2 = await nestedFolder.CreateFileAsync(fileName);
+            var nestedFolder = await folder.GetFolderReferenceAsync("nestedFolder");
+            var file2 = await nestedFolder.GetFileReferenceAsync(fileName);
             await file2.WriteAsync(new byte[] { });
 
             currentList = await nestedFolder.ListAsync(true);
@@ -70,9 +70,9 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             string cdpTestRoot = "tests/" + Guid.NewGuid().ToString();
             string fileName = Guid.NewGuid().ToString();
 
-            var folder = await _rootFolder.CreateFolderAsync(cdpTestRoot);
+            var folder = await _rootFolder.GetFolderReferenceAsync(cdpTestRoot);
 
-            var file = await folder.CreateFileAsync(fileName, true);
+            var file = await folder.GetFileReferenceAsync(fileName, true);
 
             var content = "test\r\n";
             await file.WriteAsync(Encoding.Default.GetBytes(content));
@@ -114,10 +114,10 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             string cdpTestRoot = "tests/" + Guid.NewGuid().ToString();
 
-            var folder = await _rootFolder.CreateFolderAsync(cdpTestRoot);
+            var folder = await _rootFolder.GetFolderReferenceAsync(cdpTestRoot);
 
             // Create an empty file to create an empty new folder on SAAS provider
-            var initialFile = await folder.CreateFileAsync(Guid.NewGuid().ToString());
+            var initialFile = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString());
 
             await initialFile.WriteAsync(new byte[0]);
 
@@ -140,7 +140,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
                 }, 1);
 
 
-            var newFile = await folder.CreateFileAsync(fileName);
+            var newFile = await folder.GetFileReferenceAsync(fileName);
             await newFile.WriteAsync(new byte[0]);
 
             // Adding some wait to make sure triggers are fired.
@@ -164,29 +164,29 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             string cdpTestRoot = "tests/" + Guid.NewGuid().ToString();
             string fileName = Guid.NewGuid().ToString();
 
-            var folder = await _rootFolder.CreateFolderAsync(cdpTestRoot);
+            var folder = await _rootFolder.GetFolderReferenceAsync(cdpTestRoot);
 
             // file doesn't exist test 
             var fileItem = await folder.GetFileItemAsync(Guid.NewGuid().ToString());
 
             Assert.Null(fileItem);
 
-            IFolderItem nullFolder = await folder.CreateFolderAsync(string.Empty);
+            IFolderItem nullFolder = await folder.GetFolderReferenceAsync(string.Empty);
 
             Assert.Null(nullFolder);
 
-            var nullFile = await folder.CreateFileAsync(string.Empty);
+            var nullFile = await folder.GetFileReferenceAsync(string.Empty);
 
             Assert.Null(nullFile);
 
-            var newFolder = await folder.CreateFolderAsync(Guid.NewGuid().ToString());
+            var newFolder = await folder.GetFolderReferenceAsync(Guid.NewGuid().ToString());
 
             // listing items for a folder which doesn't exist
             var listItems = await newFolder.ListAsync();
 
             Assert.Equal(listItems.Length, 0);
 
-            var newFile = await newFolder.CreateFileAsync(Guid.NewGuid().ToString());
+            var newFile = await newFolder.GetFileReferenceAsync(Guid.NewGuid().ToString());
 
             try
             {
@@ -226,7 +226,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             Assert.False(folder.FolderExists(newFolderName));
             Assert.False(folder.FileExists(newFileName));
 
-            newFile = await folder.CreateFileAsync(newFolderName + "/" + newFileName);
+            newFile = await folder.GetFileReferenceAsync(newFolderName + "/" + newFileName);
             await newFile.WriteAsync(null);
 
             Assert.True(folder.FolderExists(newFolderName));
