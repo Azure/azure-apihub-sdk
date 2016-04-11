@@ -10,6 +10,7 @@ namespace Microsoft.Azure.ApiHub
     internal class LocalFileItem : IFileItem
     {
         internal string _path;
+        internal string _rootPath;
 
         internal bool _overwrite;
 
@@ -31,30 +32,35 @@ namespace Microsoft.Azure.ApiHub
 
         public Task DeleteAsync()
         {
-            if (!File.Exists(_path))
+            string newPath = GetUpdatedPath();
+
+            if (!File.Exists(newPath))
             {
                 return Task.FromResult(0);
             }
 
-            File.Delete(_path);
+            File.Delete(newPath);
             return Task.FromResult(0);
         }
 
         public Task<MetadataInfo> GetMetadataAsync()
         {
-            if (!File.Exists(_path))
+            string newPath = GetUpdatedPath();
+
+            if (!File.Exists(newPath))
             {
                 return Task.FromResult<MetadataInfo>(null);
             }
 
             var metaData = new MetadataInfo
             {
-                Path = _path,
-                DisplayName = _path,
-                Id = System.IO.Path.GetFileName(_path),
+                Path = newPath,
+                DisplayName = newPath,
+                Id = System.IO.Path.GetFileName(newPath),
                 IsFolder = false,
-                LastModified = File.GetLastWriteTimeUtc(_path),
-                Name = System.IO.Path.GetFileName(_path)
+                LastModified = File.GetLastWriteTimeUtc(newPath),
+                Name = System.IO.Path.GetFileName(newPath),
+                Size = File.ReadAllBytes(newPath).Length
             };
 
             return Task.FromResult(metaData);
@@ -62,17 +68,21 @@ namespace Microsoft.Azure.ApiHub
 
         public Task<byte[]> ReadAsync()
         {
-            if(!File.Exists(_path))
+            string newPath = GetUpdatedPath();
+
+            if (!File.Exists(newPath))
             {
-                throw new FileNotFoundException(_path);
+                throw new FileNotFoundException(newPath);
             }
 
-            return Task.FromResult(File.ReadAllBytes(_path));
+            return Task.FromResult(File.ReadAllBytes(newPath));
         }
 
         public Task WriteAsync(byte[] contents)
         {
-            if(File.Exists(_path))
+            string newPath = GetUpdatedPath();
+
+            if (File.Exists(newPath))
             {
                 // TODO decide what we should do here.
                 if (!_overwrite)
@@ -82,25 +92,38 @@ namespace Microsoft.Azure.ApiHub
             }
             else
             {
-                _path = _path.Replace('/', '\\');
-
-                if(!Directory.Exists(System.IO.Path.GetDirectoryName(_path)))
+                if (!Directory.Exists(System.IO.Path.GetDirectoryName(newPath)))
                 {
-                    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(_path));
-                }
-
-                using (var fs = File.Create(_path))
-                {
-                    fs.Flush();
+                    Directory.CreateDirectory(System.IO.Path.GetDirectoryName(newPath));
                 }
             }
 
             if (contents != null)
             {
-                File.WriteAllBytes(_path, contents);
+                using (var fs = File.OpenWrite(newPath))
+                {
+                    fs.Write(contents, 0, contents.Length);
+                    fs.Flush();
+                }
+            }
+            else
+            {
+                File.WriteAllBytes(newPath, new byte[] { });
             }
 
             return Task.FromResult(0);
+        }
+
+        private string GetUpdatedPath()
+        {
+            if (!_path.StartsWith(_rootPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return (_rootPath + _path);
+            }
+            else
+            {
+                return _path;
+            }
         }
     }
 }

@@ -49,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Azure-ApiHub-Sdk.csproj">
+    <ProjectReference Include="..\..\src\Azure.ApiHub.Sdk.csproj">
       <Project>{f8356d27-805d-4ecd-95bf-8cc08063eb02}</Project>
-      <Name>Azure-ApiHub-Sdk</Name>
+      <Name>Azure.ApiHub.Sdk</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

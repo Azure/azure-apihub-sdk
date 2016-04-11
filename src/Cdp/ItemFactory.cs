@@ -22,7 +22,8 @@ namespace Microsoft.Azure.ApiHub
             {
                 return new LocalFolderItem
                 {
-                    _path = localPath
+                    _path = localPath,
+                    _rootPath = localPath
                 };
             }
 

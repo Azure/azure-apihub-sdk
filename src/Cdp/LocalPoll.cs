@@ -16,6 +16,7 @@ namespace Microsoft.Azure.ApiHub
     internal class LocalPoll : IFileWatcher
     {
         internal Func<IFileItem, Task> _callback;
+        internal string _rootPath;
 
         private FileSystemWatcher _watcher;
 
@@ -47,9 +48,20 @@ namespace Microsoft.Azure.ApiHub
 
         private void FileChanged(object sender, FileSystemEventArgs e)
         {
+            // relative path is needed here.
+            var path = e.FullPath.Replace(_rootPath, string.Empty);
+
+            if (path.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
+            {
+                path = path.Remove(0, 1);
+            }
+
+            path = path.Replace("\\", "/");
+
             var localFileItem = new LocalFileItem
             {
-                _path = e.FullPath
+                _path = path,
+                _rootPath = this._rootPath,
             };
 
             _callback(localFileItem);
@@ -57,9 +69,20 @@ namespace Microsoft.Azure.ApiHub
 
         private void FileCreated(object sender, FileSystemEventArgs e)
         {
+            // relative path is needed here.
+            var path = e.FullPath.Replace(_rootPath, string.Empty);
+
+            if(path.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
+            {
+                path = path.Remove(0, 1);
+            }
+
+            path = path.Replace("\\", "/");
+
             var localFileItem = new LocalFileItem
             {
-                _path = e.FullPath
+                _path = path,
+                _rootPath = this._rootPath,
             };
 
             _callback(localFileItem);

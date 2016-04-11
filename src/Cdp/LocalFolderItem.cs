@@ -10,6 +10,7 @@ namespace Microsoft.Azure.ApiHub
     internal class LocalFolderItem : IFolderItem
     {
         internal string _path;
+        internal string _rootPath;
 
         public Task<string> HandleId
         {
@@ -41,6 +42,7 @@ namespace Microsoft.Azure.ApiHub
                 {
                     _path = path,
                     _overwrite = overwrite,
+                    _rootPath = this._rootPath
                 });
         }
 
@@ -57,6 +59,7 @@ namespace Microsoft.Azure.ApiHub
                 new LocalFolderItem
                 {
                     _path = path,
+                    _rootPath = this._rootPath
                 });
         }
 
@@ -67,9 +70,15 @@ namespace Microsoft.Azure.ApiHub
                 throw new ArgumentException("Callback can not be null.");
             }
 
+            if(!Directory.Exists(_path))
+            {
+                Directory.CreateDirectory(_path);
+            }
+
             var poll = new LocalPoll
             {
-                _callback = callback
+                _callback = callback,
+                _rootPath = this._rootPath
             };
 
             poll.Run(_path, LocalFileWatcherType.FileCreated);
@@ -84,9 +93,15 @@ namespace Microsoft.Azure.ApiHub
                 throw new ArgumentException("Callback can not be null.");
             }
 
+            if (!Directory.Exists(_path))
+            {
+                Directory.CreateDirectory(_path);
+            }
+
             var poll = new LocalPoll
             {
-                _callback = callback
+                _callback = callback,
+                _rootPath = this._rootPath
             };
 
             poll.Run(_path, LocalFileWatcherType.FileUpdate);
@@ -105,7 +120,8 @@ namespace Microsoft.Azure.ApiHub
 
             var fileItem = new LocalFileItem
             {
-                _path = path
+                _path = path,
+                _rootPath = this._rootPath
             };
 
             return Task.FromResult<IFileItem>(fileItem);
@@ -122,7 +138,8 @@ namespace Microsoft.Azure.ApiHub
 
             var folderItem = new LocalFolderItem
             {
-                _path = path
+                _path = path,
+                _rootPath = this._rootPath
             };
 
             return Task.FromResult<IFolderItem>(folderItem);
@@ -158,7 +175,8 @@ namespace Microsoft.Azure.ApiHub
             {
                 items.Add(new LocalFileItem
                 {
-                    _path = file
+                    _path = file,
+                    _rootPath = this._rootPath
                 });
             }
 
@@ -168,7 +186,8 @@ namespace Microsoft.Azure.ApiHub
             {
                 items.Add(new LocalFolderItem
                 {
-                    _path = folder
+                    _path = folder,
+                    _rootPath = this._rootPath
                 });
             }
 

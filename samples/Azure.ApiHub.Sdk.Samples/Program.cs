@@ -109,7 +109,7 @@ namespace Azure.ApiHub.Sdk.Samples
         {
             var root = ItemFactory.Parse(connectionString);
 
-            string cdpTestRoot = "cdpFiles/";
+            string cdpTestRoot = "cdpFiles/nested/";
             var folder = await root.CreateFolderAsync(cdpTestRoot);
 
             await ListTestsAsync(cdpTestRoot, root, folder);
@@ -225,10 +225,14 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await nestedFolder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", nestedFolder.Path, currentList.Count());
 
-            //folder = await root.CreateFolderAsync(cdpTestRoot);
-            //var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
-            //currentList = await NestedFolderTwoLevel.ListAsync(true);
-            //Console.WriteLine("Number of items in {0} and all its subfolders: {1}", NestedFolderTwoLevel.Path, currentList.Count());
+            folder = await root.CreateFolderAsync(cdpTestRoot);
+            var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
+
+            if (NestedFolderTwoLevel != null)
+            {
+                currentList = await NestedFolderTwoLevel.ListAsync(true);
+                Console.WriteLine("Number of items in {0} and all its subfolders: {1}", NestedFolderTwoLevel.Path, currentList.Count());
+            }
 
             currentList = await root.ListAsync(false);
 
