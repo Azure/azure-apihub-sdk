@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.ApiHub.Extensions;
 
 namespace Microsoft.Azure.ApiHub
 {
@@ -13,7 +14,7 @@ namespace Microsoft.Azure.ApiHub
     {
         internal int _pollIntervalInSeconds;
         internal CdpHelper _cdpHelper;
-        internal Func<IFileItem, Task> _callback;
+        internal Func<IFileItem, Uri, Task> _callback;
         internal Task _runTask;
 
         private CancellationTokenSource _cancel = new CancellationTokenSource();
@@ -41,17 +42,55 @@ namespace Microsoft.Azure.ApiHub
             while (!_cancel.IsCancellationRequested)
             {
                 // Make call 
-                HttpResponseMessage response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
+                int maxRetries = 5;
+                int retry = 0;
+
+                HttpResponseMessage response = null;
+
+                // This is just a temp fix to do a retry on transient web errors.
+                while (retry < maxRetries)
+                {
+                    try
+                    {
+                        response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
+                    }
+                    catch(Exception ex)
+                    {
+                        retry++;
+
+                        if(retry < maxRetries)
+                        {
+                            retry++;
+                            await Task.Delay(200);
+                            continue;
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
+
+                    if(response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
+                    {
+                        retry++;
+                        await Task.Delay(200);
+                    }
+                    else
+                    {
+                        // we are good, so no more retries.
+                        break;
+                    }
+                }
 
                 pollUri = response.Headers.Location; // poll next
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string fileId = GetHeader(response, "x-ms-file-id");
-                    string fileName = GetHeader(response, "x-ms-file-name");
-                    string fullpath = GetHeader(response, "x-ms-file-path"); 
-                    string etag = GetHeader(response, "x-ms-file-etag");
-                    string contentType = GetHeader(response, "Content-Type");
+                    string fileId = response.GetHeader("x-ms-file-id");
+                    string fileName = response.GetHeader("x-ms-file-name");
+                    string fullpath = response.GetHeader("x-ms-file-path"); 
+                    string etag = response.GetHeader("x-ms-file-etag");
+                    string contentType = response.GetHeader("Content-Type");
 
                     // Chop off leading 
                     if (fullpath[0] == '/')
@@ -69,7 +108,7 @@ namespace Microsoft.Azure.ApiHub
                     this._totalCounted++;
                     this._mostRecentName = fileName;
 
-                    await _callback(fileItem);
+                    await _callback(fileItem, pollUri);
                     // CDP only dispatches one at a time, so poll immediately to see if there's more.                         
                 }
                 else if (response.StatusCode == HttpStatusCode.Accepted)
@@ -93,17 +132,6 @@ namespace Microsoft.Azure.ApiHub
                     // return;
                 }
             }
-        }
-
-        static string GetHeader(HttpResponseMessage response, string name)
-        {
-            IEnumerable<string> x;
-            response.Headers.TryGetValues(name, out x);
-            if (x != null && x.Any())
-            {
-                return x.First();
-            }
-            return null;
         }
     }
 }

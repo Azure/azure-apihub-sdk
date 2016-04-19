@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.ApiHub.Extensions;
 
 namespace Microsoft.Azure.ApiHub
 {
@@ -77,35 +78,10 @@ namespace Microsoft.Azure.ApiHub
                 });
         }
 
-        public IFileWatcher CreateNewFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = 30)
+        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = 30)
         {
-            if(callback == null)
-            {
-                throw new ArgumentException("Callback can not be null.");
-            }
+            Uri pollUri = null;
 
-            var poll = new Poll
-            {
-                _pollIntervalInSeconds = pollIntervalInSeconds,
-                _cdpHelper = this._cdpHelper,
-                _callback = callback
-            };
-
-            if(string.IsNullOrEmpty(_handleId))
-            {
-                _handleId = GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null).GetAwaiter().GetResult();
-            }
-
-            Uri firstUrl = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
-
-            Task tIgnore = poll.Run(firstUrl);
-            poll._runTask = tIgnore;
-
-            return poll;
-        }
-
-        public IFileWatcher CreateUpdateFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = 30)
-        {
             if (callback == null)
             {
                 throw new ArgumentException("Callback can not be null.");
@@ -118,17 +94,117 @@ namespace Microsoft.Azure.ApiHub
                 _callback = callback
             };
 
-            if (string.IsNullOrEmpty(_handleId))
+            if (nextItem == null)
             {
-                _handleId = GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null).GetAwaiter().GetResult();
+                if (string.IsNullOrEmpty(_handleId))
+                {
+                    _handleId = GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null).GetAwaiter().GetResult();
+                }
+
+                if (fileWatcherType == FileWatcherType.Created)
+                {
+                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                }
+                else if (fileWatcherType == FileWatcherType.Updated)
+                {
+                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnUpdateFileTemplate, _handleId);
+                }
+            }
+            else
+            {
+                pollUri = nextItem as Uri;
+
+                if (pollUri == null)
+                {
+                    throw new ArgumentException("Invalid type", "nextItem");
+                }
             }
 
-            Uri firstUrl = _cdpHelper.MakeUri(CdpConstants.OnUpdateFileTemplate, _handleId);
+            if (_handleId != null)
+            {
+                Task tIgnore = poll.Run(pollUri);
+                poll._runTask = tIgnore;
 
-            Task tIgnore = poll.Run(firstUrl);
-            poll._runTask = tIgnore;
+                return poll;
+            }
+            else
+            {
+                // throw new ApplicationException("Can't create a trigger on a folder which does not exist: " + _path );
+                return null;
+            }
+        }
 
-            return poll;
+        public async Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null)
+        {
+            Uri pollUri = null;
+
+            if (nextItem == null)
+            {
+                if (string.IsNullOrEmpty(_handleId))
+                {
+                    _handleId = await GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null);
+                }
+
+                if (fileWatcherType == FileWatcherType.Created)
+                {
+                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                }
+                else if (fileWatcherType == FileWatcherType.Updated)
+                {
+                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnUpdateFileTemplate, _handleId);
+                }
+            }
+            else
+            {
+                pollUri = nextItem as Uri;
+
+                if(pollUri == null)
+                {
+                    throw new ArgumentException("Invalid type", "nextItem");
+                }
+            }
+
+            HttpResponseMessage response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
+
+            Uri nextUri = response.Headers.Location; // poll next
+            TimeSpan delay = new TimeSpan();
+            IFileItem fileItem = null;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                string fileId = response.GetHeader("x-ms-file-id");
+                string fullpath = response.GetHeader("x-ms-file-path");
+
+                // Chop off leading 
+                if (fullpath[0] == '/')
+                {
+                    fullpath = fullpath.Substring(1);
+                }
+
+                // Got a new file 
+                fileItem = new FileItem
+                {
+                    _path = fullpath,
+                    _handleId = fileId,
+                };
+            }
+            else if (response.StatusCode == HttpStatusCode.Accepted)
+            {
+                var rt = response.Headers.RetryAfter;
+
+                if (rt.Delta.HasValue)
+                {
+                    delay = rt.Delta.Value;
+                }
+            }
+
+            return new FileTriggerInfo
+            {
+                FileItem = fileItem,
+                NextUri = nextUri,
+                WatcherType = fileWatcherType,
+                RetryAfter = delay
+            };
         }
 
         public Task<MetadataInfo> GetMetadataAsync()

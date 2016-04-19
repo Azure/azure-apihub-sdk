@@ -48,19 +48,21 @@ namespace Microsoft.Azure.ApiHub
         Task<IItem[]> ListAsync(bool includeSubdirectories = false);
 
         /// <summary>
-        /// Creates the new file watcher.
+        /// Creates a file watcher.
         /// </summary>
+        /// <param name="fileWatcherType">Type of the file watcher.</param>
         /// <param name="callback">The callback.</param>
+        /// <param name="nextItem">The next item to continue monitoring.</param>
         /// <param name="pollIntervalInSeconds">The poll interval in seconds.</param>
         /// <returns></returns>
-        IFileWatcher CreateNewFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds);
+        IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds);
 
         /// <summary>
-        /// Creates the update file watcher.
+        /// Checks for a file to be added or updated.
         /// </summary>
-        /// <param name="callback">The callback.</param>
-        /// <param name="pollIntervalInSeconds">The poll interval in seconds.</param>
+        /// <param name="fileWatcherType">Type of the file watcher.</param>
+        /// <param name="url">The next item to continue monitoring.</param>
         /// <returns></returns>
-        IFileWatcher CreateUpdateFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds);
+        Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null);
     }
 }

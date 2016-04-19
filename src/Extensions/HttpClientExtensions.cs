@@ -57,6 +57,17 @@ namespace Microsoft.Azure.ApiHub.Extensions
         {
             return message.Content.ReadAsStringAsync().Result.FromJson<T>(JsonExtensions.MediaTypeFormatterSettings);
         }
+
+        public static string GetHeader(this HttpResponseMessage response, string name)
+        {
+            IEnumerable<string> x;
+            response.Headers.TryGetValues(name, out x);
+            if (x != null && x.Any())
+            {
+                return x.First();
+            }
+            return null;
+        }
         #endregion Synchronous methods
 
         #region Asynchronous methods
