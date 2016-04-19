@@ -29,7 +29,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
             //ListAllApisAsync(aadToken).Wait();
 
-            //GetConnectionKeyAsync(aadToken).Wait();
+            GetConnectionKeyAsync(aadToken).Wait();
 
             RunApiHubTests("UseLocalFileSystem=true;Path=C:\\tests").Wait();
 
@@ -126,21 +126,33 @@ namespace Azure.ApiHub.Sdk.Samples
             bool fileAddedTrigger = false;
             bool fileUpdatedTrigger = false;
 
-            var poll = folder.CreateNewFileWatcher(
-                (fr) =>
+            var poll = folder.CreateFileWatcher(FileWatcherType.Created,
+                (fr, obj) =>
                 {
                     Console.WriteLine("File {0} was added.", fr.Path);
+
+                    var uri = obj as Uri;
+                    if (uri != null)
+                    {
+                        Console.WriteLine("Next Uri: {0}", uri.AbsolutePath);
+                    }
                     fileAddedTrigger = true;
                     return Task.FromResult(0);
-                }, 1);
+                }, null, 1);
 
-            var poll2 = folder.CreateUpdateFileWatcher(
-                (fr) =>
+            var poll2 = folder.CreateFileWatcher(FileWatcherType.Updated,
+                (fr, obj) =>
                 {
                     Console.WriteLine("File {0} was updated.", fr.Path);
+
+                    var uri = obj as Uri;
+                    if (uri != null)
+                    {
+                        Console.WriteLine("Next Uri: {0}", uri.AbsolutePath);
+                    }
                     fileUpdatedTrigger = true;
                     return Task.FromResult(0);
-                }, 1);
+                }, null, 1);
 
             var newFile = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString());
             await newFile.WriteAsync(new byte[0]);
@@ -161,6 +173,16 @@ namespace Azure.ApiHub.Sdk.Samples
             if (!fileUpdatedTrigger)
             {
                 Console.WriteLine("Error: Update file was not triggered when an existing file was updated.");
+            }
+
+            var trigger = await folder.CheckForFile(FileWatcherType.Updated);
+            await newFile.WriteAsync(new byte[1] { 1 });
+
+            trigger = await folder.CheckForFile(FileWatcherType.Updated, trigger.NextUri);
+
+            if (trigger.FileItem != null)
+            {
+                Console.WriteLine("Updated file: {0}", trigger.FileItem.Path);
             }
 
             await newFile.DeleteAsync();

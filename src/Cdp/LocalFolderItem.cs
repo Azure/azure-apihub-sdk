@@ -63,7 +63,7 @@ namespace Microsoft.Azure.ApiHub
                 });
         }
 
-        public IFileWatcher CreateNewFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = 30)
+        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = 30)
         {
             if (callback == null)
             {
@@ -81,32 +81,17 @@ namespace Microsoft.Azure.ApiHub
                 _rootPath = this._rootPath
             };
 
-            poll.Run(_path, LocalFileWatcherType.FileCreated);
+            poll.Run(_path, fileWatcherType);
             
             return poll;
         }
 
-        public IFileWatcher CreateUpdateFileWatcher(Func<IFileItem, Task> callback, int pollIntervalInSeconds = 30)
+        public Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null)
         {
-            if (callback == null)
-            {
-                throw new ArgumentException("Callback can not be null.");
-            }
+            // TODO: Implement this later for local files based on last modified date/time
+            var fileTriggerInfo = new FileTriggerInfo();
 
-            if (!Directory.Exists(_path))
-            {
-                Directory.CreateDirectory(_path);
-            }
-
-            var poll = new LocalPoll
-            {
-                _callback = callback,
-                _rootPath = this._rootPath
-            };
-
-            poll.Run(_path, LocalFileWatcherType.FileUpdate);
-
-            return poll;
+            return Task.FromResult(fileTriggerInfo);
         }
 
         public Task<IFileItem> GetFileItemAsync(string path)

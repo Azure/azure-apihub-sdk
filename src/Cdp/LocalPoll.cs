@@ -7,15 +7,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.ApiHub
 {
-    internal enum LocalFileWatcherType
-    {
-        FileCreated,
-        FileUpdate
-    }
-
     internal class LocalPoll : IFileWatcher
     {
-        internal Func<IFileItem, Task> _callback;
+        internal Func<IFileItem, object, Task> _callback;
         internal string _rootPath;
 
         private FileSystemWatcher _watcher;
@@ -30,11 +24,11 @@ namespace Microsoft.Azure.ApiHub
             await Task.FromResult(0);
         }
 
-        public void Run(string path, LocalFileWatcherType watcherType)
+        public void Run(string path, FileWatcherType watcherType)
         {
             _watcher = new FileSystemWatcher(path);
 
-            if (watcherType == LocalFileWatcherType.FileCreated)
+            if (watcherType == FileWatcherType.Created)
             {
                 _watcher.Created += FileCreated;
             }
@@ -64,7 +58,7 @@ namespace Microsoft.Azure.ApiHub
                 _rootPath = this._rootPath,
             };
 
-            _callback(localFileItem);
+            _callback(localFileItem, DateTime.Now);
         }
 
         private void FileCreated(object sender, FileSystemEventArgs e)
@@ -85,7 +79,7 @@ namespace Microsoft.Azure.ApiHub
                 _rootPath = this._rootPath,
             };
 
-            _callback(localFileItem);
+            _callback(localFileItem, DateTime.Now);
         }
     }
 }

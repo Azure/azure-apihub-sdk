@@ -123,33 +123,46 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             string fileName = Guid.NewGuid().ToString();
 
-            var poll = folder.CreateNewFileWatcher(
-                (fr) =>
+            var poll = folder.CreateFileWatcher(FileWatcherType.Created,
+                (fr, obj) =>
                 {
                     Assert.True(fr.Path.Contains(fileName));
+
+                    var uri = obj as Uri;
+                    if (uri != null)
+                    {
+                        Assert.True(!string.IsNullOrEmpty(uri.AbsolutePath));
+                    }
+
                     fileAddedTrigger = true;
                     return Task.FromResult(0);
-                }, 1);
+                }, null, 1 );
 
-            var poll2 = folder.CreateUpdateFileWatcher(
-                (fr) =>
+            var poll2 = folder.CreateFileWatcher(FileWatcherType.Updated,
+                (fr, obj) =>
                 {
                     Assert.True(fr.Path.Contains(fileName));
+
+                    var uri = obj as Uri;
+                    if (uri != null)
+                    {
+                        Assert.True(!string.IsNullOrEmpty(uri.AbsolutePath));
+                    }
+
                     fileUpdatedTrigger = true;
                     return Task.FromResult(0);
-                }, 1);
-
+                }, null, 1);
 
             var newFile = await folder.GetFileReferenceAsync(fileName);
             await newFile.WriteAsync(new byte[0]);
 
             // Adding some wait to make sure triggers are fired.
-            await Task.Delay(10000);
+            await Task.Delay(15000);
 
             await newFile.WriteAsync(new byte[1] { 0 });
 
             // Adding some wait to make sure triggers are fired.
-            await Task.Delay(10000);
+            await Task.Delay(15000);
 
             Assert.True(fileAddedTrigger);
             Assert.True(fileUpdatedTrigger);

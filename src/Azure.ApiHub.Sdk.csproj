@@ -53,6 +53,8 @@
   <ItemGroup>
     <Compile Include="Cdp\CdpConstants.cs" />
     <Compile Include="Cdp\CdpHelper.cs" />
+    <Compile Include="Cdp\FileTriggerInfo.cs" />
+    <Compile Include="Cdp\FileWatcherType.cs" />
     <Compile Include="Cdp\LocalFileItem.cs" />
     <Compile Include="Cdp\LocalFolderItem.cs" />
     <Compile Include="Cdp\LocalPoll.cs" />
