@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Azure.ApiHub.Extensions
 {
@@ -100,10 +101,12 @@ namespace Microsoft.Azure.ApiHub.Extensions
         /// </summary>
         /// <typeparam name="T">The type of object contained in the JSON.</typeparam>
         /// <param name="message">The response message to be read.</param>
-        public static async Task<T> ReadAsJsonAsync<T>(this HttpResponseMessage message)
+        /// <param name="settings">Json serializer settings.</param>
+        public static async Task<T> ReadAsJsonAsync<T>(this HttpResponseMessage message,
+            JsonSerializerSettings settings = null)
         {
             string content = await message.Content.ReadAsStringAsync();
-            return content.FromJson<T>(JsonExtensions.MediaTypeFormatterSettings);
+            return content.FromJson<T>(settings ?? JsonExtensions.MediaTypeFormatterSettings);
         }
 
         /// <summary>

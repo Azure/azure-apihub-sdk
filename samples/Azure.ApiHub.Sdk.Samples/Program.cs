@@ -1,11 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Management;
 using Microsoft.Azure.ApiHub;
 using System.IO;
+using Microsoft.Azure.ApiHub.Sdk;
+using Microsoft.Azure.ApiHub.Sdk.Tabular;
+using Newtonsoft.Json.Linq;
 
 namespace Azure.ApiHub.Sdk.Samples
 {
@@ -35,8 +38,61 @@ namespace Azure.ApiHub.Sdk.Samples
 
             //ReadFromWriteToSaasProvidersTestAsync(aadToken, "dropbox", "googledrive").Wait();
 
+            //TableClientTestAsync().Wait();
+
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
+        }
+
+        private static async Task TableClientTestAsync()
+        {
+            const string connectionStringFormat = "endpoint={0};scheme={1};accesstoken={2}";
+
+            // Replace endpoing, scheme, accessToken with valid values.
+            var connectionString = string.Format(connectionStringFormat,
+                "endpoint",
+                "scheme",
+                "accessToken");
+
+            var provider = new ClientFactory(connectionString).CreateTableClient();
+
+            var datasetsSegment = await provider.ListDataSetsAsync();
+
+            foreach (var dataset in datasetsSegment.Items)
+            {
+                Console.WriteLine(dataset.DataSetName);
+
+                var tablesSegment = await dataset.ListTablesAsync();
+
+                foreach (var table in tablesSegment.Items)
+                {
+                    Console.WriteLine(table.TableName);
+
+                    var metadata = await table.GetMetadataAsync();
+
+                    Console.WriteLine(metadata.Schema.ToString());
+
+                    var entitiesSegment = await table.ListEntitiesAsync();
+
+                    foreach (var entity in entitiesSegment.Items)
+                    {
+                        foreach (var kvp in entity)
+                        {
+                            Console.WriteLine(kvp.Key + ": " + kvp.Value);
+                        }
+                    }
+
+                    var newEntity = new JObject();
+                    newEntity["c1"] = 2;
+                    newEntity["c2"] = "foo";
+
+                    //await table.CreateEntityAsync(newEntity);
+
+                    //await table.UpdateEntityAsync("2", newEntity);
+
+                    //await table.DeleteEntityAsync("2");
+                }
+            }
         }
 
         private static async Task ReadFromWriteToSaasProvidersTestAsync(string aadToken, string source, string destination)

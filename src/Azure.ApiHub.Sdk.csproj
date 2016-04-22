@@ -41,8 +41,10 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,8 +71,11 @@
     <Compile Include="Cdp\ItemFactory.cs" />
     <Compile Include="Cdp\MetadataResponse.cs" />
     <Compile Include="Cdp\Poll.cs" />
+    <Compile Include="Common\Protocol\ODataConstants.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Management\ApiHubClient-Connections.cs" />
     <Compile Include="Management\ApiHubClient-Apis.cs" />
     <Compile Include="Management\ApiHubClient-BaseMethods.cs" />
@@ -81,6 +86,34 @@
     <Compile Include="Management\Entities\ConnectionKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Helpers.cs" />
+    <Compile Include="ClientFactory.cs" />
+    <Compile Include="Common\ConnectorHttpClient.cs" />
+    <Compile Include="Common\ConnectionSettings.cs" />
+    <Compile Include="Tabular\CapabilityFilterFunction.cs" />
+    <Compile Include="Tabular\ContinuationToken.cs" />
+    <Compile Include="Tabular\Internal\ProtocolToModelConverter.cs" />
+    <Compile Include="Tabular\Protocol\CapabilityFilterFunction.cs" />
+    <Compile Include="Tabular\Protocol\TableCapabilitiesMetadata.cs" />
+    <Compile Include="Tabular\Protocol\TableFilterRestrictionsMetadata.cs" />
+    <Compile Include="Tabular\Protocol\Table.cs" />
+    <Compile Include="Tabular\Protocol\DataSet.cs" />
+    <Compile Include="Common\Protocol\ODataList.cs" />
+    <Compile Include="Tabular\Protocol\TableMetadata.cs" />
+    <Compile Include="Tabular\Protocol\TableSortRestrictionsMetadata.cs" />
+    <Compile Include="Tabular\Query.cs" />
+    <Compile Include="Tabular\Table.cs" />
+    <Compile Include="Tabular\TableCapabilitiesMetadata.cs" />
+    <Compile Include="Tabular\TableFilterRestrictionsMetadata.cs" />
+    <Compile Include="Tabular\TableMetadata.cs" />
+    <Compile Include="Tabular\TableSortRestrictionsMetadata.cs" />
+    <Compile Include="Tabular\TableClient.cs" />
+    <Compile Include="Tabular\DataSet.cs" />
+    <Compile Include="Tabular\IDataSet.cs" />
+    <Compile Include="Tabular\ITable.cs" />
+    <Compile Include="Common\SegmentedResult.cs" />
+    <Compile Include="Tabular\ITableClient.cs" />
+    <Compile Include="Tabular\Protocol\Constants.cs" />
+    <Compile Include="Tabular\Internal\TabularConnectorAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
