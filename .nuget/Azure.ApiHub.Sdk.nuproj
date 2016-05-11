@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))..\Azure.ApiHub.Sdk.settings.targets"/>
+  <PropertyGroup>
+    <NuSpecFile>$(MSBuildProjectName).nuspec</NuSpecFile>
+    <NuGetPackageId>Microsoft.Azure.WebJobs.Extensions.ApiHub</NuGetPackageId>
+    <NuGetPackageVersion>$(ApiHubPackageVersion)</NuGetPackageVersion>
+    <NuGetPackSymbols>false</NuGetPackSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(RootPath)\src\Azure.ApiHub.Sdk.csproj">
+      <Project>{E6F59990-F3A1-469F-A9D8-6D529121D385}</Project>
+      <Name>Azure.ApiHub.Sdk</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <NuGetContent Include="$(RootPath)\src\bin\$(Configuration)\Microsoft.Azure.ApiHub.Sdk.dll">
+      <Destination>lib\net45\Microsoft.Azure.ApiHub.Sdk.dll</Destination>
+    </NuGetContent> 
+  </ItemGroup>
+  <Import Project=".\NuGetProj.targets"/> 
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <!-- Define properties you want to use inside your nuspec file. -->
+      <PackageOutputDir>$(RootPath).artifacts</PackageOutputDir>
+      <NuSpecProperties>NuGetPackageId=$(NuGetPackageId);NuGetPackageVersion=$(NuGetPackageVersion);PackageEULA=$(WebJobsPackageEULA);WebJobsPackageVersion=$(ApiHubPackageVersion)</NuSpecProperties>
+    </PropertyGroup>
+  </Target>
+  <Target Name="AfterBuild">
+     <Message Text="$(PublishPath) -- Package is generated in $(RootPath).artifacts\" />
+  </Target>
+</Project>

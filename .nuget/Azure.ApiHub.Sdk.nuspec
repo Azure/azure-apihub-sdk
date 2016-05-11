@@ -3,7 +3,7 @@
   <metadata>
     <id>Microsoft.Azure.ApiHub.Sdk</id>
     <title>Microsoft Azure ApiHub SDK</title>
-    <version>0.6.2</version>
+    <version>$NuGetPackageVersion$</version>
     <authors>Azure App Service</authors>
     <summary>SDK for working with managed APIs and connections hosted in Azure App Service</summary>
     <description>SDK for working with managed APIs and connections hosted in Azure App Service. Azure App Service platform abstracts different SaaS providers and makes easy to work with them with common contract.</description>
@@ -12,9 +12,9 @@
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes></releaseNotes>
-  </metadata>
-  <files>
-    <file src="..\src\bin\release\*.exe" target="tools" />
-    <file src="..\src\bin\release\*.dll" target="tools" />
-  </files>
+    <dependencies>
+      <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
+      <dependency id="Newtonsoft.Json" version="6.0.4" />
+    </dependencies>
+  </metadata> 
 </package>
