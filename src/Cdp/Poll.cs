@@ -56,6 +56,8 @@ namespace Microsoft.Azure.ApiHub
                     }
                     catch(Exception ex)
                     {
+                        _cdpHelper.Logger.Error(string.Format("Retry {0} out of {1} for uri: {2}", retry, maxRetries, pollUri.AbsoluteUri), ex);
+
                         retry++;
 
                         if(retry < maxRetries)
@@ -72,17 +74,24 @@ namespace Microsoft.Azure.ApiHub
 
                     if(response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
                     {
+                        string content = "";
+                        if (response.Content != null)
+                        {
+                            content = await response.Content.ReadAsStringAsync();
+                        }
+
+                        _cdpHelper.Logger.Error(string.Format("Returned status code {0}, Retry {1} out of {2} for uri: {3} returned: {4}", response.StatusCode, retry, maxRetries, pollUri.AbsoluteUri, content));
+
                         retry++;
                         await Task.Delay(200);
                     }
                     else
                     {
                         // we are good, so no more retries.
+                        pollUri = response.Headers.Location; // poll next
                         break;
                     }
                 }
-
-                pollUri = response.Headers.Location; // poll next
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -108,7 +117,9 @@ namespace Microsoft.Azure.ApiHub
                     this._totalCounted++;
                     this._mostRecentName = fileName;
 
-                    await _callback(fileItem, pollUri);
+                    _cdpHelper.Logger.Verbose(string.Format("file {0} was retrieved for uri: {1}:", fullpath, pollUri.AbsoluteUri));
+
+                     await _callback(fileItem, pollUri);
                     // CDP only dispatches one at a time, so poll immediately to see if there's more.                         
                 }
                 else if (response.StatusCode == HttpStatusCode.Accepted)
@@ -126,10 +137,11 @@ namespace Microsoft.Azure.ApiHub
                     await Task.Delay(delay);
                 }
                 else {
-                    await Task.Delay(_pollIntervalInSeconds * 2);
-                    // TODO: Investigate other status codes being returned.
-                    // Stop polling. 
-                    // return;
+                    var delay = TimeSpan.FromSeconds(_pollIntervalInSeconds * 2);
+
+                    _cdpHelper.Logger.Warning(string.Format("Unexpected status code: {0}, retry after {1} seconds for uri: {2}", response.StatusCode, delay.TotalSeconds, pollUri != null ? pollUri.AbsoluteUri : ""));
+
+                    await Task.Delay(delay);
                 }
             }
         }

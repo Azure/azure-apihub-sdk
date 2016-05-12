@@ -6,14 +6,14 @@ namespace Microsoft.Azure.ApiHub
 {
     public static class IFolderItemExtensions
     {
-        public static Task<IFolderItem> GetFolderItemAsync(this IFolderItem folder, string path, string handleId, Uri runtimeEndpoint, string scheme, string accessToken)
+        public static Task<IFolderItem> GetFolderItemAsync(this IFolderItem folder, string path, string handleId, Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger = null)
         {            
             return Task.FromResult<IFolderItem>(
                 new FolderItem
                 {
                     _path = path,
                     _handleId = handleId,
-                    _cdpHelper = new CdpHelper(runtimeEndpoint, scheme, accessToken)
+                    _cdpHelper = new CdpHelper(runtimeEndpoint, scheme, accessToken, logger)
                 });
         }
 

@@ -71,6 +71,8 @@
     <Compile Include="Cdp\ItemFactory.cs" />
     <Compile Include="Cdp\MetadataResponse.cs" />
     <Compile Include="Cdp\Poll.cs" />
+    <Compile Include="Common\ILogger.cs" />
+    <Compile Include="Common\NoopLogger.cs" />
     <Compile Include="Common\Protocol\ODataConstants.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Extensions\JsonExtensions.cs" />

@@ -123,7 +123,6 @@ namespace Microsoft.Azure.ApiHub
 
             var result = await _cdpHelper.SendResultAsync<MetadataInfo>(HttpMethod.Post, uri, contents);
 
-            // TODO: what to do otherwise? throw an exception?
             if (result.Item2 == HttpStatusCode.OK)
             {
                 _handleId = result.Item1.Id;
@@ -138,6 +137,10 @@ namespace Microsoft.Azure.ApiHub
                     await UpdateAsync(contents);
                 }
             }
+            else
+            {
+                _cdpHelper.Logger.Error(string.Format("Failed to write! Returned status code {0}, path: {1} uri: {2}", result.Item2 , _path, uri.AbsoluteUri));
+            }
         }
 
         private async Task UpdateAsync(byte[] contents)
@@ -150,6 +153,10 @@ namespace Microsoft.Azure.ApiHub
             if (result.Item2 == HttpStatusCode.OK)
             {
                 _handleId = result.Item1.Id;
+            }
+            else
+            {
+                _cdpHelper.Logger.Error(string.Format("Failed to update! Returned status code {0}, path: {1} uri: {2}", result.Item2, _path, uri.AbsoluteUri));
             }
         }
     }

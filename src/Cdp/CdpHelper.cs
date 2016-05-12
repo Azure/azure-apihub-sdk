@@ -17,6 +17,7 @@ namespace Microsoft.Azure.ApiHub
         private Uri _runtimeEndpoint;
         private string _accessTokenScheme;
         private string _accessToken;
+        private ILogger _logger;
 
         public Uri RuntimeEndpoint
         {
@@ -42,11 +43,20 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken)
+        public ILogger Logger
+        {
+            get
+            {
+                return _logger;
+            }
+        }
+
+        public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger)
         {
             _runtimeEndpoint = runtimeEndpoint;
             _accessTokenScheme = scheme;
             _accessToken = accessToken;
+            _logger = logger;
         }
 
         public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, byte[] content = null)
@@ -62,11 +72,16 @@ namespace Microsoft.Azure.ApiHub
                     request.Content = new ByteArrayContent(content);
                 }
 
-                response = await _httpClient.SendAsync(request);                
+                response = await _httpClient.SendAsync(request);    
+                
+                if(!response.IsSuccessStatusCode)
+                {
+                    await LogNonSuccessAsync(response);
+                }
             }
             catch (Exception ex)
             {
-                throw new HttpRequestException("Request failed for: " + url.AbsolutePath + " message: " + ex.Message);
+                throw new HttpRequestException("Request failed for: " + url.AbsolutePath, ex);
             }
             return response;
         }
@@ -79,6 +94,10 @@ namespace Microsoft.Azure.ApiHub
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 result = await DecodeAsync<TResult>(response);
+            }
+            else
+            {
+                await LogNonSuccessAsync(response);
             }
 
             return new Tuple<TResult, HttpStatusCode>( result, response.StatusCode);
@@ -94,6 +113,7 @@ namespace Microsoft.Azure.ApiHub
                     return null;
                 }
 
+                await LogNonSuccessAsync(response);
                 throw new HttpRequestException("Request failed for: " + url.AbsolutePath + "response code: " + response.StatusCode);
             }
 
@@ -119,6 +139,7 @@ namespace Microsoft.Azure.ApiHub
             string json = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
+                await LogNonSuccessAsync(response);
                 throw new HttpRequestException("Request failed response code: " + response.StatusCode);
             }
             var result = JsonConvert.DeserializeObject<TResult>(json);
@@ -134,6 +155,17 @@ namespace Microsoft.Azure.ApiHub
         private void AddAccessToken(HttpRequestMessage request)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue(_accessTokenScheme, _accessToken);
+        }
+
+        private async Task LogNonSuccessAsync(HttpResponseMessage response)
+        {
+            string content = "";
+            if (response.Content != null)
+            {
+                content = await response.Content.ReadAsStringAsync();
+            }
+
+            _logger.Error(string.Format("Request returned status: {0}, verb: {1}, message: {2}, uri: {3}", response.StatusCode, response.RequestMessage.Method, content, response.RequestMessage.RequestUri.AbsoluteUri));
         }
     }
 }

@@ -123,13 +123,17 @@ namespace Microsoft.Azure.ApiHub
             if (_handleId != null)
             {
                 Task tIgnore = poll.Run(pollUri);
+
+                _cdpHelper.Logger.Verbose(string.Format("Started monitoring folder: {0}, pollUri: {1}", _path, pollUri.AbsoluteUri));
+
                 poll._runTask = tIgnore;
 
                 return poll;
             }
             else
             {
-                // throw new ApplicationException("Can't create a trigger on a folder which does not exist: " + _path );
+                _cdpHelper.Logger.Error("Can't create a trigger on a folder which does not exist: " + _path);
+
                 return null;
             }
         }
@@ -266,7 +270,7 @@ namespace Microsoft.Azure.ApiHub
                             _handleId = nestedItem.Id
                         });
 
-                        var nestedFolder = await this.GetFolderItemAsync(nestedItem.Path, nestedItem.Id, _cdpHelper.RuntimeEndpoint, _cdpHelper.AccessTokenScheme, _cdpHelper.AccessToken);
+                        var nestedFolder = await this.GetFolderItemAsync(nestedItem.Path, nestedItem.Id, _cdpHelper.RuntimeEndpoint, _cdpHelper.AccessTokenScheme, _cdpHelper.AccessToken, _cdpHelper.Logger);
 
                         var items2 = await nestedFolder.ListAsync(includeSubdirectories);
 
@@ -401,6 +405,12 @@ namespace Microsoft.Azure.ApiHub
 
         private async Task<string> GetHandleIdFromPathAsync(Uri uri, string[] parts, int idx, MetadataInfo current)
         {
+            if(idx == 0 && parts.Length == 0)
+            {
+                // this is the top most root.
+                return (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1[0].Id;
+            }
+
             if (idx >= parts.Length)
             {
                 return current.Id;
