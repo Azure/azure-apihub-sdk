@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Tabular
+namespace Microsoft.Azure.ApiHub.Sdk.Table
 {
     public class TableSortRestrictionsMetadata
     {

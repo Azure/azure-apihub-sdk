@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Tabular.Protocol
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
 {
     /// <summary>
     /// Represents the metadata for a table.

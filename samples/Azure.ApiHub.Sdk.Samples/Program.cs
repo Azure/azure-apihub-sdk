@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Management;
 using Microsoft.Azure.ApiHub;
 using System.IO;
 using Microsoft.Azure.ApiHub.Sdk;
-using Microsoft.Azure.ApiHub.Sdk.Tabular;
+using Microsoft.Azure.ApiHub.Sdk.Table;
 using Newtonsoft.Json.Linq;
 
 namespace Azure.ApiHub.Sdk.Samples
@@ -15,7 +14,7 @@ namespace Azure.ApiHub.Sdk.Samples
     class Program
     {
         private const string subscriptionId = "83e6374a-dfa5-428b-82ef-eab6c6bdd383";
-        private const string location ="brazilsouth";
+        private const string location = "brazilsouth";
 
         // look at armclient token to login to AAD and get arm token
         private static string aadToken = "";
@@ -44,19 +43,25 @@ namespace Azure.ApiHub.Sdk.Samples
             Console.ReadLine();
         }
 
+        public class SampleEntity
+        {
+            public int C1 { get; set; }
+            public string C2 { get; set; }
+        }
+
         private static async Task TableClientTestAsync()
         {
             const string connectionStringFormat = "endpoint={0};scheme={1};accesstoken={2}";
 
-            // Replace endpoing, scheme, accessToken with valid values.
-            var connectionString = string.Format(connectionStringFormat,
-                "endpoint",
-                "scheme",
-                "accessToken");
+           // Replace endpoint, scheme, accessToken with valid values.
+           var connectionString = string.Format(connectionStringFormat,
+               "endpoint",
+               "scheme",
+               "accessToken");
 
-            var provider = new ClientFactory(connectionString).CreateTableClient();
+            var tableClient = new ClientFactory(connectionString).CreateTableClient();
 
-            var datasetsSegment = await provider.ListDataSetsAsync();
+            var datasetsSegment = await tableClient.ListDataSetsAsync();
 
             foreach (var dataset in datasetsSegment.Items)
             {
@@ -93,6 +98,12 @@ namespace Azure.ApiHub.Sdk.Samples
                     //await table.DeleteEntityAsync("2");
                 }
             }
+
+            var table1 = tableClient.GetDataSetReference().GetTableReference<SampleEntity>("table1");
+            var entity1 = await table1.GetEntityAsync("1");
+
+            Console.WriteLine(entity1.C1);
+            Console.WriteLine(entity1.C2);
         }
 
         private static async Task ReadFromWriteToSaasProvidersTestAsync(string aadToken, string source, string destination)
@@ -119,7 +130,7 @@ namespace Azure.ApiHub.Sdk.Samples
             await destinationFile.WriteAsync(sourceContent);
             var destinationContent = await destinationFile.ReadAsync();
 
-            if((Encoding.Default.GetString(sourceContent)).Equals((Encoding.Default.GetString(destinationContent))))
+            if ((Encoding.Default.GetString(sourceContent)).Equals((Encoding.Default.GetString(destinationContent))))
             {
                 Console.WriteLine("Source and destination files match!");
             }
@@ -322,14 +333,14 @@ namespace Azure.ApiHub.Sdk.Samples
             // file doesn't exist test 
             var fileItem = await folder.GetFileItemAsync(Guid.NewGuid().ToString());
 
-            if(fileItem != null)
+            if (fileItem != null)
             {
                 Console.WriteLine("Error: Files which do not exist should return null when calling GetFileItemAsync");
             }
 
             IFolderItem nullFolder = await folder.GetFolderReferenceAsync(string.Empty);
 
-            if(nullFolder != null)
+            if (nullFolder != null)
             {
                 Console.WriteLine("Error: null folder expected.");
             }
@@ -346,7 +357,7 @@ namespace Azure.ApiHub.Sdk.Samples
             // listing items for a folder which doesn't exist
             var listItems = await newFolder.ListAsync();
 
-            if(listItems.Length > 0)
+            if (listItems.Length > 0)
             {
                 Console.WriteLine("Error: A folder which doesn't exist returned content.");
             }
@@ -358,14 +369,14 @@ namespace Azure.ApiHub.Sdk.Samples
                 // trying to read from a file which doesn't exist should throw an exception.
                 var bytes = await newFile.ReadAsync();
             }
-            catch(FileNotFoundException ex)
+            catch (FileNotFoundException ex)
             {
                 Console.WriteLine("Expected exception was thrown when attempting to read from a file which doesn't exist.");
             }
 
             var metadata = await newFile.GetMetadataAsync();
 
-            if(metadata != null)
+            if (metadata != null)
             {
                 Console.WriteLine("Error: Metadata should be null for a file which doesn't exist.");
             }
@@ -378,7 +389,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
             metadata = await newFile.GetMetadataAsync();
 
-            if(metadata == null || metadata.Size > 0)
+            if (metadata == null || metadata.Size > 0)
             {
                 Console.WriteLine("Error: Unable to create an empty file.");
             }
@@ -387,9 +398,9 @@ namespace Azure.ApiHub.Sdk.Samples
 
             metadata = await newFile.GetMetadataAsync();
 
-            listItems =  await newFolder.ListAsync();
+            listItems = await newFolder.ListAsync();
 
-            if(listItems.Length != 1)
+            if (listItems.Length != 1)
             {
                 Console.WriteLine("Error: there should only be one item in the directory.");
             }
@@ -406,7 +417,7 @@ namespace Azure.ApiHub.Sdk.Samples
             string newFolderName = Guid.NewGuid().ToString();
             string newFileName = Guid.NewGuid().ToString();
 
-            if(folder.FolderExists(newFolderName))
+            if (folder.FolderExists(newFolderName))
             {
                 Console.WriteLine("Error: Folder must not yet exist.");
             }

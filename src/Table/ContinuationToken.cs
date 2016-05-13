@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Tabular
+﻿namespace Microsoft.Azure.ApiHub.Sdk.Table
 {
     public class ContinuationToken
     {

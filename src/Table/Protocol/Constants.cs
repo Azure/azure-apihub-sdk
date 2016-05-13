@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Tabular.Protocol
+﻿namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
 {
     internal static class Constants
     {
@@ -17,6 +17,6 @@
         public const string TableItemsTemplate = "datasets('{" + DataSetNameParameter + "}')/tables('{" + TableNameParameter + "}')/items";
         public const string TableItemTemplate = "datasets('{" + DataSetNameParameter + "}')/tables('{" + TableNameParameter + "}')/items('{" + ItemIdParameter + "}')";
 
-        public const string ItemInternalIdProperty = "ItemInternalId";
+        public const string DefaultDataSetName = "default";
     }
 }

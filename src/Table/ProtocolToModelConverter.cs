@@ -1,25 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Azure.ApiHub.Sdk.Common.Protocol;
+﻿using System.Linq;
 using Microsoft.Azure.ApiHub.Sdk.Extensions;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Tabular.Internal
+namespace Microsoft.Azure.ApiHub.Sdk.Table
 {
     internal class ProtocolToModelConverter
     {
-        public virtual DataSet Convert(Protocol.DataSet dataSet, TableClient provider)
+        public virtual DataSet Convert(
+            Protocol.DataSet dataSet, 
+            TabularConnectorAdapter adapter)
         {
-            var result = provider.GetDataSetReference(dataSet.Name);
+            var result = new DataSet(dataSet.Name, adapter);
 
             result.DisplayName = dataSet.DisplayName;
 
             return result;
         }
 
-        public virtual Table Convert(Protocol.Table table, DataSet dataSet)
+        public virtual Table<TEntity> Convert<TEntity>(            
+            Protocol.Table table,
+            string dataSetName,
+            TabularConnectorAdapter adapter)
+            where TEntity : class
         {
-            var result = dataSet.GetTableReference(table.Name);
+            var result = new Table<TEntity>(dataSetName, table.Name, adapter);
 
             result.DisplayName = table.DisplayName;
 

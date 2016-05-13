@@ -4,10 +4,11 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Extensions;
 using Microsoft.Azure.ApiHub.Sdk.Extensions;
-using Microsoft.Azure.ApiHub.Sdk.Tabular;
+using Microsoft.Azure.ApiHub.Sdk.Table;
 using Newtonsoft.Json;
 
 namespace Microsoft.Azure.ApiHub.Sdk.Common
@@ -45,24 +46,25 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
 
             var uriBuilder = new UriBuilder(uriTemplate.AbsoluteUri)
             {
-                Query = query.Coalesce().ToString()
+                Query = query.Coalesce().QueryString
             };
 
             return uriBuilder.Uri;
         }
 
-        public virtual async Task<TItem> GetAsync<TItem>(Uri requestUri)
-            where TItem : class
+        public virtual async Task<TItem> GetAsync<TItem>(
+            Uri requestUri, 
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
             ApplyCredentials(request);
 
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                return null;
+                return default(TItem);
             }
 
             response.EnsureSuccessStatusCode();
@@ -73,14 +75,15 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
             return result;
         }
 
-        public virtual async Task<Protocol.ODataList<TItem>> ListAsync<TItem>(Uri requestUri)
-            where TItem : class
+        public virtual async Task<Protocol.ODataList<TItem>> ListAsync<TItem>(
+            Uri requestUri,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
             ApplyCredentials(request);
 
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
@@ -90,8 +93,10 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
             return result;
         }
 
-        public virtual async Task PostAsync<TItem>(Uri requestUri, TItem item)
-            where TItem : class
+        public virtual async Task PostAsync<TItem>(
+            Uri requestUri, 
+            TItem item,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
@@ -102,13 +107,15 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
                 Encoding.UTF8,
                 MediaTypeApplicationJson);
 
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
 
             response.EnsureSuccessStatusCode();
         }
 
-        public virtual async Task PatchAsync<TItem>(Uri requestUri, TItem item)
-            where TItem : class
+        public virtual async Task PatchAsync<TItem>(
+            Uri requestUri, 
+            TItem item,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri);
 
@@ -119,18 +126,20 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
                 Encoding.UTF8,
                 MediaTypeApplicationJson);
 
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
 
             response.EnsureSuccessStatusCode();
         }
 
-        public virtual async Task DeleteAsync(Uri requestUri)
+        public virtual async Task DeleteAsync(
+            Uri requestUri,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
 
             ApplyCredentials(request);
 
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {

@@ -1,21 +1,21 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Tabular.Protocol
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
 {
     /// <summary>
-    /// Represents a table
+    /// Represents a dataset
     /// </summary>
     [DataContract]
-    public class Table
+    public class DataSet
     {
         /// <summary>
-        /// Gets or sets the table name
+        /// Gets or sets the dataset name
         /// </summary>
         [DataMember]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets table display name
+        /// Gets or sets dataset display name
         /// </summary>
         [DataMember]
         public string DisplayName { get; set; }

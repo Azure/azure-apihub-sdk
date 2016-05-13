@@ -1,32 +1,26 @@
 ﻿using Microsoft.Azure.ApiHub.Sdk.Common;
-using Microsoft.Azure.ApiHub.Sdk.Tabular;
-using Microsoft.Azure.ApiHub.Sdk.Tabular.Internal;
+using Microsoft.Azure.ApiHub.Sdk.Table;
 
 namespace Microsoft.Azure.ApiHub.Sdk
 {
     public class ClientFactory
     {
-        public string ConnectionString { get; private set; }
+        private ConnectionSettings ConnectionSettings { get; set; }
 
         public ClientFactory(string connectionString)
         {
-            ConnectionString = connectionString;
+            ConnectionSettings = ConnectionSettings.Parse(connectionString);
         }
 
         public virtual ITableClient CreateTableClient()
         {
-            var settings = ConnectionSettings.Parse(ConnectionString);
-
-            // TODO: Check the settings and instantiate a local implementation if specified.
-
-            return new TableClient(new TabularConnectorAdapter
-            {
-                Client = new ConnectorHttpClient(
-                    settings.RuntimeEndpoint, 
-                    settings.AccessTokenScheme, 
-                    settings.AccessToken),
-                ProtocolToModel = new ProtocolToModelConverter()
-            });
+            return new TableClient(
+                new TabularConnectorAdapter(
+                    new ConnectorHttpClient(
+                        ConnectionSettings.RuntimeEndpoint,
+                        ConnectionSettings.AccessTokenScheme,
+                        ConnectionSettings.AccessToken),
+                    new ProtocolToModelConverter()));
         }
     }
 }

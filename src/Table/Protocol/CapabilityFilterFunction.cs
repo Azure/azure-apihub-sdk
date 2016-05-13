@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Tabular.Protocol
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
 {
     /// <summary>
     /// Filter functions that could be available on a table
