@@ -2,7 +2,6 @@
 
 namespace Microsoft.Azure.ApiHub.Sdk.Common
 {
-    // TODO: Add settings for local implementation.
     internal class ConnectionSettings
     {
         public Uri RuntimeEndpoint { get; set; }

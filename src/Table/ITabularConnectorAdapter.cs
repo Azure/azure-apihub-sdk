@@ -9,7 +9,7 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
     /// Connector data protocol (CDP) adapter for tabular connectors.
     /// Defines the flat list of APIs provided by the connector.
     /// </summary>
-    internal interface ITabularConnectorAdapter
+    public interface ITabularConnectorAdapter
     {
         /// <summary>
         /// Queries the tabular connector for data sets.

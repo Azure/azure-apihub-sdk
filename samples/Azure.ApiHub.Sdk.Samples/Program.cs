@@ -59,7 +59,8 @@ namespace Azure.ApiHub.Sdk.Samples
                "scheme",
                "accessToken");
 
-            var tableClient = new ClientFactory(connectionString).CreateTableClient();
+            var connection = new Connection(connectionString);
+            var tableClient = connection.CreateTableClient();
 
             var datasetsSegment = await tableClient.ListDataSetsAsync();
 

@@ -88,7 +88,7 @@
     <Compile Include="Management\Entities\ConnectionKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Helpers.cs" />
-    <Compile Include="ClientFactory.cs" />
+    <Compile Include="Connection.cs" />
     <Compile Include="Common\ConnectorHttpClient.cs" />
     <Compile Include="Common\ConnectionSettings.cs" />
     <Compile Include="Table\CapabilityFilterFunction.cs" />
