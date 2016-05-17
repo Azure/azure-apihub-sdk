@@ -4,14 +4,10 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
 {
     public class TableCapabilitiesMetadata
     {
-        internal TableCapabilitiesMetadata()
-        {
-        }
+        public TableSortRestrictionsMetadata SortRestrictions { get; set; }
 
-        public TableSortRestrictionsMetadata SortRestrictions { get; internal set; }
+        public TableFilterRestrictionsMetadata FilterRestrictions { get; set; }
 
-        public TableFilterRestrictionsMetadata FilterRestrictions { get; internal set; }
-
-        public IReadOnlyList<CapabilityFilterFunction> FilterFunctions { get; internal set; }
+        public IReadOnlyList<CapabilityFilterFunction> FilterFunctions { get; set; }
     }
 }

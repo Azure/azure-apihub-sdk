@@ -4,18 +4,14 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
 {
     public class TableMetadata
     {
-        internal TableMetadata()
-        {            
-        }
+        public string Name { get; set; }
 
-        public string Name { get; internal set; }
+        public string Title { get; set; }
 
-        public string Title { get; internal set; }
+        public string Permission { get; set; }
 
-        public string Permission { get; internal set; }
+        public TableCapabilitiesMetadata Capabilities { get; set; }
 
-        public TableCapabilitiesMetadata Capabilities { get; internal set; }
-
-        public JObject Schema { get; internal set; }
+        public JObject Schema { get; set; }
     }
 }

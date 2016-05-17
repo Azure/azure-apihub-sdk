@@ -1,16 +1,22 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Sdk.Common;
+using System;
 using Microsoft.Azure.ApiHub.Sdk.Table.Protocol;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
-    internal class TableClient : ITableClient
+    public class TableClient : ITableClient
     {
         private ITabularConnectorAdapter Adapter { get; set; }
 
         public TableClient(ITabularConnectorAdapter adapter)
         {
+            if (adapter == null)
+            {
+                throw new ArgumentNullException("adapter");
+            }
+
             Adapter = adapter;
         }
 

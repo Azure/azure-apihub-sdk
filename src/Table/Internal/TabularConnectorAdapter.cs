@@ -6,7 +6,7 @@ using Microsoft.Azure.ApiHub.Sdk.Extensions;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
     internal class TabularConnectorAdapter : ITabularConnectorAdapter
     {
@@ -87,6 +87,7 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string tableName, 
             string entityId,
             CancellationToken cancellationToken)
+            where TEntity : class
         {
             var requestUri = HttpClient.CreateRequestUri(
                 template: Protocol.Constants.TableItemTemplate,
@@ -108,6 +109,7 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             Query query,
             ContinuationToken continuationToken,
             CancellationToken cancellationToken)
+            where TEntity : class
         {
             var requestUri = HttpClient.CreateRequestUri(
                 template: Protocol.Constants.TableItemsTemplate,
@@ -131,6 +133,7 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string tableName,
             TEntity entity,
             CancellationToken cancellationToken)
+            where TEntity : class
         {
             var requestUri = HttpClient.CreateRequestUri(
                 template: Protocol.Constants.TableItemsTemplate,
@@ -149,6 +152,7 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string entityId, 
             TEntity entity,
             CancellationToken cancellationToken)
+            where TEntity : class
         {
             var requestUri = HttpClient.CreateRequestUri(
                 template: Protocol.Constants.TableItemTemplate,

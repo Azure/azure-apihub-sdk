@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.Azure.ApiHub.Sdk.Extensions;
+using Microsoft.Azure.ApiHub.Sdk.Table.Internal;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
     internal class ProtocolToModelConverter
     {

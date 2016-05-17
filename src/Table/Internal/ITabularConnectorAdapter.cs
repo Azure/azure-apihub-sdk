@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Sdk.Common;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
     /// <summary>
     /// Connector data protocol (CDP) adapter for tabular connectors.
@@ -69,7 +69,8 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string dataSetName,
             string tableName,
             string entityId,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken))
+            where TEntity : class;
 
         /// <summary>
         /// Queries the tabular connector for entities in a table.
@@ -88,7 +89,8 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string tableName,
             Query query = null,
             ContinuationToken continuationToken = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken))
+            where TEntity : class;
 
         /// <summary>
         /// Adds a new entity to a table.
@@ -103,7 +105,8 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string dataSetName,
             string tableName,
             TEntity entity,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken))
+            where TEntity : class;
 
         /// <summary>
         /// Updates an existing entity.
@@ -120,7 +123,8 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             string tableName,
             string entityId,
             TEntity entity,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken))
+            where TEntity : class;
 
         /// <summary>
         /// Deletes an existing entity.

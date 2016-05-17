@@ -1,5 +1,7 @@
-﻿using Microsoft.Azure.ApiHub.Sdk.Common;
+﻿using System;
+using Microsoft.Azure.ApiHub.Sdk.Common;
 using Microsoft.Azure.ApiHub.Sdk.Table;
+using Microsoft.Azure.ApiHub.Sdk.Table.Internal;
 
 namespace Microsoft.Azure.ApiHub.Sdk
 {
@@ -11,11 +13,23 @@ namespace Microsoft.Azure.ApiHub.Sdk
         private ConnectionSettings ConnectionSettings { get; set; }
 
         /// <summary>
+        /// Purposed only for testing.
+        /// </summary>
+        protected Connection()
+        {
+        }
+
+        /// <summary>
         /// Creates a new instance of this class.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         public Connection(string connectionString)
         {
+            if (connectionString == null)
+            {
+                throw new ArgumentException("The connection string must not be null or empty", "connectionString");
+            }
+
             ConnectionSettings = ConnectionSettings.Parse(connectionString);
         }
 
@@ -25,23 +39,13 @@ namespace Microsoft.Azure.ApiHub.Sdk
         /// <returns>The table client.</returns>
         public virtual ITableClient CreateTableClient()
         {
-            return CreateTableClient(
+            return new TableClient(
                 new TabularConnectorAdapter(
                     new ConnectorHttpClient(
                         ConnectionSettings.RuntimeEndpoint,
                         ConnectionSettings.AccessTokenScheme,
                         ConnectionSettings.AccessToken),
                     new ProtocolToModelConverter()));
-        }
-
-        /// <summary>
-        /// Creates a client with tabular capabilities using the specified adapter.
-        /// <param name="adapter">The tabular connector adapter.</param>
-        /// </summary>
-        /// <returns>The table client.</returns>
-        protected ITableClient CreateTableClient(ITabularConnectorAdapter adapter)
-        {
-            return new TableClient(adapter);
         }
     }
 }

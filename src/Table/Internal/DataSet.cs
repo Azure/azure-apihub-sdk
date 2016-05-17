@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Sdk.Common;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
-    internal class DataSet : IDataSet
+    public class DataSet : IDataSet
     {
         public string DataSetName { get; private set; }
 
@@ -19,6 +19,11 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             if (string.IsNullOrEmpty(dataSetName))
             {
                 throw new ArgumentException("The dataset name must not be null or empty.", "dataSetName");
+            }
+
+            if (adapter == null)
+            {
+                throw new ArgumentNullException("adapter");
             }
 
             DataSetName = dataSetName;

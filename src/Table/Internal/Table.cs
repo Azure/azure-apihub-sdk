@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Sdk.Common;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
 {
-    internal class Table<TEntity> : ITable<TEntity>
+    public class Table<TEntity> : ITable<TEntity>
         where TEntity: class
     {
         public string DataSetName { get; private set; }
@@ -26,6 +26,11 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
             if (string.IsNullOrEmpty(tableName))
             {
                 throw new ArgumentException("The table name must not be null or empty.", "tableName");
+            }
+
+            if (adapter == null)
+            {
+                throw new ArgumentNullException("adapter");
             }
 
             DataSetName = dataSetName;

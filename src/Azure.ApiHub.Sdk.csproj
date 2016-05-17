@@ -93,8 +93,8 @@
     <Compile Include="Common\ConnectionSettings.cs" />
     <Compile Include="Table\CapabilityFilterFunction.cs" />
     <Compile Include="Table\ContinuationToken.cs" />
-    <Compile Include="Table\ProtocolToModelConverter.cs" />
-    <Compile Include="Table\ITabularConnectorAdapter.cs" />
+    <Compile Include="Table\Internal\ProtocolToModelConverter.cs" />
+    <Compile Include="Table\Internal\ITabularConnectorAdapter.cs" />
     <Compile Include="Table\Protocol\CapabilityFilterFunction.cs" />
     <Compile Include="Table\Protocol\TableCapabilitiesMetadata.cs" />
     <Compile Include="Table\Protocol\TableFilterRestrictionsMetadata.cs" />
@@ -104,20 +104,19 @@
     <Compile Include="Table\Protocol\TableMetadata.cs" />
     <Compile Include="Table\Protocol\TableSortRestrictionsMetadata.cs" />
     <Compile Include="Table\Query.cs" />
-    <Compile Include="Table\Table.cs" />
+    <Compile Include="Table\Internal\Table.cs" />
     <Compile Include="Table\TableCapabilitiesMetadata.cs" />
     <Compile Include="Table\TableFilterRestrictionsMetadata.cs" />
     <Compile Include="Table\TableMetadata.cs" />
     <Compile Include="Table\TableSortRestrictionsMetadata.cs" />
-    <Compile Include="Table\TableClient.cs" />
-    <Compile Include="Table\DataSet.cs" />
+    <Compile Include="Table\Internal\TableClient.cs" />
+    <Compile Include="Table\Internal\DataSet.cs" />
     <Compile Include="Table\IDataSet.cs" />
     <Compile Include="Table\ITable.cs" />
     <Compile Include="Common\SegmentedResult.cs" />
     <Compile Include="Table\ITableClient.cs" />
     <Compile Include="Table\Protocol\Constants.cs" />
-    <Compile Include="Table\TableWatcher.cs" />
-    <Compile Include="Table\TabularConnectorAdapter.cs" />
+    <Compile Include="Table\Internal\TabularConnectorAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
