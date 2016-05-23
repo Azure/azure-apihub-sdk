@@ -117,7 +117,7 @@ namespace Microsoft.Azure.ApiHub
                     this._totalCounted++;
                     this._mostRecentName = fileName;
 
-                    _cdpHelper.Logger.Verbose(string.Format("file {0} was retrieved for uri: {1}:", fullpath, pollUri.AbsoluteUri));
+                    _cdpHelper.Logger.Info(string.Format("file {0} was retrieved for uri: {1}:", fullpath, pollUri.AbsoluteUri));
 
                      await _callback(fileItem, pollUri);
                     // CDP only dispatches one at a time, so poll immediately to see if there's more.                         

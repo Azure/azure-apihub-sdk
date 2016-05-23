@@ -124,7 +124,7 @@ namespace Microsoft.Azure.ApiHub
             {
                 Task tIgnore = poll.Run(pollUri);
 
-                _cdpHelper.Logger.Verbose(string.Format("Started monitoring folder: {0}, pollUri: {1}", _path, pollUri.AbsoluteUri));
+                _cdpHelper.Logger.Info(string.Format("Started monitoring folder: {0}, pollUri: {1}", _path, pollUri.AbsoluteUri));
 
                 poll._runTask = tIgnore;
 
