@@ -120,7 +120,7 @@ namespace Microsoft.Azure.ApiHub
                 }
             }
 
-            if (_handleId != null)
+            if (_handleId != null || nextItem != null)
             {
                 Task tIgnore = poll.Run(pollUri);
 
@@ -408,7 +408,16 @@ namespace Microsoft.Azure.ApiHub
             if(idx == 0 && parts.Length == 0)
             {
                 // this is the top most root.
-                return (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1[0].Id;
+                var itemArray = (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1;
+
+                if(itemArray != null && itemArray.Length > 0)
+                {
+                    return itemArray[0].Id;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             if (idx >= parts.Length)
@@ -418,18 +427,21 @@ namespace Microsoft.Azure.ApiHub
 
             var itemsArray = (await _cdpHelper.SendResultAsync<MetadataInfo[]>(HttpMethod.Get, uri)).Item1;
 
-            foreach (var item in itemsArray)
+            if (itemsArray != null)
             {
-                if (item.IsFolder)
+                foreach (var item in itemsArray)
                 {
-                    if (item.Path == "/")
+                    if (item.IsFolder)
                     {
-                        // This is the root folder
-                        return await GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.FoldersRoot + "/" + item.Id), parts, idx, item);
-                    }
-                    else if (item.Name.Equals(parts[idx], StringComparison.OrdinalIgnoreCase))
-                    {
-                        return await GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.FoldersRoot + "/" + item.Id), parts, ++idx, item);
+                        if (item.Path == "/")
+                        {
+                            // This is the root folder
+                            return await GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.FoldersRoot + "/" + item.Id), parts, idx, item);
+                        }
+                        else if (item.Name.Equals(parts[idx], StringComparison.OrdinalIgnoreCase))
+                        {
+                            return await GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.FoldersRoot + "/" + item.Id), parts, ++idx, item);
+                        }
                     }
                 }
             }
