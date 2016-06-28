@@ -63,7 +63,7 @@ namespace Microsoft.Azure.ApiHub
                 });
         }
 
-        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = 30)
+        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds)
         {
             if (callback == null)
             {

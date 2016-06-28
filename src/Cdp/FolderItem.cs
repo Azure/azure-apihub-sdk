@@ -78,7 +78,7 @@ namespace Microsoft.Azure.ApiHub
                 });
         }
 
-        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = 30)
+        public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds)
         {
             Uri pollUri = null;
 
@@ -171,7 +171,7 @@ namespace Microsoft.Azure.ApiHub
             HttpResponseMessage response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
 
             Uri nextUri = response.Headers.Location; // poll next
-            TimeSpan delay = new TimeSpan();
+            TimeSpan delay = new TimeSpan(0, 0, CdpConstants.DefaultFileWatcherIntervalInSeconds);
             IFileItem fileItem = null;
 
             if (response.StatusCode == HttpStatusCode.OK)
