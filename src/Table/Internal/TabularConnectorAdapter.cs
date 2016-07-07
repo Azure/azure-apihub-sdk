@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Sdk.Common;
 using Microsoft.Azure.ApiHub.Sdk.Extensions;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Threading;
 
 namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
@@ -120,11 +121,27 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
                 },
                 query: query);
 
+            if (continuationToken != null &&
+                !string.IsNullOrEmpty(continuationToken.NextLink))
+            {
+                // TODO: Add NextLink validation.
+                requestUri = new Uri(continuationToken.NextLink);
+            }
+
             var result = await HttpClient.ListAsync<TEntity>(requestUri, cancellationToken);
+
+            continuationToken =
+                string.IsNullOrEmpty(result.NextLink)
+                    ? null
+                    : new ContinuationToken
+                    {
+                        NextLink = result.NextLink
+                    };
 
             return new SegmentedResult<TEntity>
             {
-                Items = result.Items.Coalesce()
+                Items = result.Items.Coalesce(),
+                ContinuationToken = continuationToken
             };
         }
 

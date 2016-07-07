@@ -92,7 +92,7 @@
     <Compile Include="Common\ConnectorHttpClient.cs" />
     <Compile Include="Common\ConnectionSettings.cs" />
     <Compile Include="Table\CapabilityFilterFunction.cs" />
-    <Compile Include="Table\ContinuationToken.cs" />
+    <Compile Include="Common\ContinuationToken.cs" />
     <Compile Include="Table\Internal\ProtocolToModelConverter.cs" />
     <Compile Include="Table\Internal\ITabularConnectorAdapter.cs" />
     <Compile Include="Table\Protocol\CapabilityFilterFunction.cs" />

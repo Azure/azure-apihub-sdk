@@ -6,6 +6,6 @@ namespace Microsoft.Azure.ApiHub.Sdk.Common
     {
         public IReadOnlyList<TItem> Items { get; set; }
 
-        public string ContinuationToken { get; set; }
+        public ContinuationToken ContinuationToken { get; set; }
     }
 }

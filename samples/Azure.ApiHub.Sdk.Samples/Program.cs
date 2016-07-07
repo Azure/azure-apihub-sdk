@@ -6,6 +6,7 @@ using Microsoft.Azure.ApiHub.Management;
 using Microsoft.Azure.ApiHub;
 using System.IO;
 using Microsoft.Azure.ApiHub.Sdk;
+using Microsoft.Azure.ApiHub.Sdk.Common;
 using Microsoft.Azure.ApiHub.Sdk.Table;
 using Newtonsoft.Json.Linq;
 
@@ -45,19 +46,28 @@ namespace Azure.ApiHub.Sdk.Samples
 
         public class SampleEntity
         {
-            public int C1 { get; set; }
-            public string C2 { get; set; }
+            public int Id { get; set; }
+            public string Text { get; set; }
         }
 
+        // NOTE: Prerequsites for running this sample:
+        // 1. Create SampleTable in your SQL database:
+        //      CREATE TABLE SampleTable
+        //      (
+        //          Id int NOT NULL,
+        //          Text nvarchar(10) NULL
+        //          CONSTRAINT PK_Id PRIMARY KEY(Id)
+        //      )
+        // 2. Provide valid endpoint, scheme, accessToken values 
+        // in the connection string below.
         private static async Task TableClientTestAsync()
         {
             const string connectionStringFormat = "endpoint={0};scheme={1};accesstoken={2}";
 
-           // Replace endpoint, scheme, accessToken with valid values.
-           var connectionString = string.Format(connectionStringFormat,
-               "endpoint",
-               "scheme",
-               "accessToken");
+            var connectionString = string.Format(connectionStringFormat,
+                "Valid endpoint goes here",
+                "Valid scheme goes here",
+                "Valid accessToken goes here");
 
             var connection = new Connection(connectionString);
             var tableClient = connection.CreateTableClient();
@@ -78,19 +88,27 @@ namespace Azure.ApiHub.Sdk.Samples
 
                     Console.WriteLine(metadata.Schema.ToString());
 
-                    var entitiesSegment = await table.ListEntitiesAsync();
-
-                    foreach (var entity in entitiesSegment.Items)
+                    ContinuationToken continuationToken = null;
+                    do
                     {
-                        foreach (var kvp in entity)
+                        var entitiesSegment = await table.ListEntitiesAsync(
+                            continuationToken: continuationToken);
+
+                        foreach (var entity in entitiesSegment.Items)
                         {
-                            Console.WriteLine(kvp.Key + ": " + kvp.Value);
+                            foreach (var kvp in entity)
+                            {
+                                Console.WriteLine(kvp.Key + ": " + kvp.Value);
+                            }
                         }
+
+                        continuationToken = entitiesSegment.ContinuationToken;
                     }
+                    while (continuationToken != null);
 
                     var newEntity = new JObject();
-                    newEntity["c1"] = 2;
-                    newEntity["c2"] = "foo";
+                    newEntity["Id"] = 2;
+                    newEntity["Text"] = "foo";
 
                     //await table.CreateEntityAsync(newEntity);
 
@@ -100,11 +118,8 @@ namespace Azure.ApiHub.Sdk.Samples
                 }
             }
 
-            var table1 = tableClient.GetDataSetReference().GetTableReference<SampleEntity>("table1");
-            var entity1 = await table1.GetEntityAsync("1");
-
-            Console.WriteLine(entity1.C1);
-            Console.WriteLine(entity1.C2);
+            //var table1 = tableClient.GetDataSetReference().GetTableReference<SampleEntity>("SampleTable");
+            //var entity1 = await table1.GetEntityAsync("1");
         }
 
         private static async Task ReadFromWriteToSaasProvidersTestAsync(string aadToken, string source, string destination)
