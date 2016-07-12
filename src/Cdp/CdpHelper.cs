@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Azure.ApiHub
@@ -51,6 +52,12 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
+        static CdpHelper()
+        {
+            // Setting the timeout to a very high value to make sure the timeouts of the underlying APIM and connectors are honored.
+            _httpClient.Timeout = TimeSpan.FromMinutes(10);
+        }
+
         public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger)
         {
             _runtimeEndpoint = runtimeEndpoint;
@@ -59,7 +66,7 @@ namespace Microsoft.Azure.ApiHub
             _logger = logger;
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, byte[] content = null)
+        public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, byte[] content = null)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, url);
             AddAccessToken(request);
@@ -72,7 +79,7 @@ namespace Microsoft.Azure.ApiHub
                     request.Content = new ByteArrayContent(content);
                 }
 
-                response = await _httpClient.SendAsync(request);    
+                response = await _httpClient.SendAsync(request, httpCompletionOption);    
                 
                 if(!response.IsSuccessStatusCode)
                 {
@@ -88,7 +95,7 @@ namespace Microsoft.Azure.ApiHub
 
         public async Task<Tuple<TResult, HttpStatusCode>> SendResultAsync<TResult>(HttpMethod method, Uri url, byte[] content = null)
         {
-            HttpResponseMessage response = await SendAsync(method, url, content);
+            HttpResponseMessage response = await SendAsync(method, url, content: content);
 
             TResult result = default(TResult);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -105,7 +112,7 @@ namespace Microsoft.Azure.ApiHub
 
         public async Task<byte[]> SendRawAsync(HttpMethod method, Uri url, byte[] content = null)
         {
-            HttpResponseMessage response = await SendAsync(method, url, content);
+            HttpResponseMessage response = await SendAsync(method, url, content: content);
             if (!response.IsSuccessStatusCode)
             {
                 if(response.StatusCode == HttpStatusCode.NotFound)

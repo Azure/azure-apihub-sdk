@@ -30,7 +30,7 @@ namespace Microsoft.Azure.ApiHub
         /// <param name="path">The path.</param>
         /// <param name="overwrite">if set to <c>true</c> [overwrite].</param>
         /// <returns></returns>
-        Task<IFileItem> GetFileReferenceAsync(string path, bool overwrite = true);
+        IFileItem GetFileReference(string path, bool overwrite = true);
 
         /// <summary>
         /// Gets a reference to a folder asynchronous.
@@ -38,7 +38,7 @@ namespace Microsoft.Azure.ApiHub
         /// <param name="path">The path.</param>
         /// <param name="overwrite">if set to <c>true</c> [overwrite].</param>
         /// <returns></returns>
-        Task<IFolderItem> GetFolderReferenceAsync(string path);
+        IFolderItem GetFolderReference(string path);
 
         /// <summary>
         /// Lists the files asynchronous.
@@ -63,6 +63,6 @@ namespace Microsoft.Azure.ApiHub
         /// <param name="fileWatcherType">Type of the file watcher.</param>
         /// <param name="url">The next item to continue monitoring.</param>
         /// <returns></returns>
-        Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null);
+        Task<FileTriggerInfo> CheckForFileAsync(FileWatcherType fileWatcherType, object nextItem = null);
     }
 }

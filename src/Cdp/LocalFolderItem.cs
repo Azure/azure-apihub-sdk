@@ -28,39 +28,37 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public Task<IFileItem> GetFileReferenceAsync(string path, bool overwrite = true)
+        public IFileItem GetFileReference(string path, bool overwrite = true)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return Task.FromResult<IFileItem>(null);
+                return null;
             }
 
             path = System.IO.Path.Combine(_path, path);
 
-            return Task.FromResult<IFileItem>(
-                new LocalFileItem
-                {
-                    _path = path,
-                    _overwrite = overwrite,
-                    _rootPath = this._rootPath
-                });
+            return new LocalFileItem
+            {
+                _path = path,
+                _overwrite = overwrite,
+                _rootPath = this._rootPath
+            };
         }
 
-        public Task<IFolderItem> GetFolderReferenceAsync(string path)
+        public IFolderItem GetFolderReference(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return Task.FromResult<IFolderItem>(null);
+                return null;
             }
 
             path = System.IO.Path.Combine(_path, path);
 
-            return Task.FromResult<IFolderItem>(
-                new LocalFolderItem
-                {
-                    _path = path,
-                    _rootPath = this._rootPath
-                });
+            return new LocalFolderItem
+            {
+                _path = path,
+                _rootPath = this._rootPath
+            };
         }
 
         public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds)
@@ -86,7 +84,7 @@ namespace Microsoft.Azure.ApiHub
             return poll;
         }
 
-        public Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null)
+        public Task<FileTriggerInfo> CheckForFileAsync(FileWatcherType fileWatcherType, object nextItem = null)
         {
             // TODO: Implement this later for local files based on last modified date/time
             var fileTriggerInfo = new FileTriggerInfo();

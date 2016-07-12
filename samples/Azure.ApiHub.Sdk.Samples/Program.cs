@@ -32,7 +32,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
             //ListAllApisAsync(aadToken).Wait();
 
-            GetConnectionKeyAsync(aadToken).Wait();
+            //GetConnectionKeyAsync(aadToken).Wait();
 
             RunApiHubTests("UseLocalFileSystem=true;Path=C:\\tests").Wait();
 
@@ -138,11 +138,11 @@ namespace Azure.ApiHub.Sdk.Samples
 
             string fileName = "test/aaa.txt";
 
-            var sourceFile = await sourceRoot.GetFileReferenceAsync(fileName);
+            var sourceFile = sourceRoot.GetFileReference(fileName);
             await sourceFile.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
             var sourceContent = await sourceFile.ReadAsync();
 
-            var destinationFile = await destinationRoot.GetFileReferenceAsync(fileName);
+            var destinationFile = destinationRoot.GetFileReference(fileName);
             await destinationFile.WriteAsync(sourceContent);
             var destinationContent = await destinationFile.ReadAsync();
 
@@ -190,10 +190,11 @@ namespace Azure.ApiHub.Sdk.Samples
 
         private static async Task RunApiHubTests(string connectionString)
         {
-            var root = ItemFactory.Parse(connectionString);
+            var logger = new ConsoleLogger();
+            var root = ItemFactory.Parse(connectionString, logger);
 
             string cdpTestRoot = "cdpFiles/nested/";
-            var folder = await root.GetFolderReferenceAsync(cdpTestRoot);
+            var folder = root.GetFolderReference(cdpTestRoot);
 
             await ListTestsAsync(cdpTestRoot, root, folder);
 
@@ -237,7 +238,7 @@ namespace Azure.ApiHub.Sdk.Samples
                     return Task.FromResult(0);
                 }, null, 1);
 
-            var newFile = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString());
+            var newFile = folder.GetFileReference(Guid.NewGuid().ToString());
             await newFile.WriteAsync(new byte[0]);
 
             // Adding some wait to make sure triggers are fired.
@@ -246,6 +247,7 @@ namespace Azure.ApiHub.Sdk.Samples
             await newFile.WriteAsync(new byte[1] { 0 });
 
             // Adding some wait to make sure triggers are fired.
+            Console.WriteLine("Waiting for 20 seconds...");
             await Task.Delay(20000);
 
             if (!fileAddedTrigger)
@@ -258,10 +260,10 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: Update file was not triggered when an existing file was updated.");
             }
 
-            var trigger = await folder.CheckForFile(FileWatcherType.Updated);
+            var trigger = await folder.CheckForFileAsync(FileWatcherType.Updated);
             await newFile.WriteAsync(new byte[1] { 1 });
 
-            trigger = await folder.CheckForFile(FileWatcherType.Updated, trigger.NextUri);
+            trigger = await folder.CheckForFileAsync(FileWatcherType.Updated, trigger.NextUri);
 
             if (trigger.FileItem != null)
             {
@@ -273,7 +275,7 @@ namespace Azure.ApiHub.Sdk.Samples
 
         private static async Task FileCrudTestsAsync(IFolderItem folder)
         {
-            var file = await folder.GetFileReferenceAsync(Guid.NewGuid().ToString() + ".txt", true);
+            var file = folder.GetFileReference(Guid.NewGuid().ToString() + ".txt", true);
 
             await file.WriteAsync(Encoding.Default.GetBytes(DateTime.Now.ToString()));
 
@@ -322,7 +324,7 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await folder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", folder.Path, currentList.Count());
 
-            var nestedFolder = await folder.GetFolderReferenceAsync("nestedFolder");
+            var nestedFolder = folder.GetFolderReference("nestedFolder");
 
             currentList = await nestedFolder.ListAsync(false);
             Console.WriteLine("Number of items in {0} : {1}", nestedFolder.Path, currentList.Count());
@@ -330,7 +332,7 @@ namespace Azure.ApiHub.Sdk.Samples
             currentList = await nestedFolder.ListAsync(true);
             Console.WriteLine("Number of items in {0} and all its subfolders: {1}", nestedFolder.Path, currentList.Count());
 
-            folder = await root.GetFolderReferenceAsync(cdpTestRoot);
+            folder = root.GetFolderReference(cdpTestRoot);
             var NestedFolderTwoLevel = await folder.GetFolderItemAsync("nestedFolder/nested2");
 
             if (NestedFolderTwoLevel != null)
@@ -354,21 +356,21 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: Files which do not exist should return null when calling GetFileItemAsync");
             }
 
-            IFolderItem nullFolder = await folder.GetFolderReferenceAsync(string.Empty);
+            IFolderItem nullFolder = folder.GetFolderReference(string.Empty);
 
             if (nullFolder != null)
             {
                 Console.WriteLine("Error: null folder expected.");
             }
 
-            var nullFile = await folder.GetFileReferenceAsync(string.Empty);
+            var nullFile = folder.GetFileReference(string.Empty);
 
             if (nullFile != null)
             {
                 Console.WriteLine("Error: null file expected.");
             }
 
-            var newFolder = await folder.GetFolderReferenceAsync(Guid.NewGuid().ToString());
+            var newFolder = folder.GetFolderReference(Guid.NewGuid().ToString());
 
             // listing items for a folder which doesn't exist
             var listItems = await newFolder.ListAsync();
@@ -378,7 +380,7 @@ namespace Azure.ApiHub.Sdk.Samples
                 Console.WriteLine("Error: A folder which doesn't exist returned content.");
             }
 
-            var newFile = await newFolder.GetFileReferenceAsync(Guid.NewGuid().ToString());
+            var newFile = newFolder.GetFileReference(Guid.NewGuid().ToString());
 
             try
             {
@@ -433,25 +435,25 @@ namespace Azure.ApiHub.Sdk.Samples
             string newFolderName = Guid.NewGuid().ToString();
             string newFileName = Guid.NewGuid().ToString();
 
-            if (folder.FolderExists(newFolderName))
+            if (await folder.FolderExistsAsync(newFolderName))
             {
                 Console.WriteLine("Error: Folder must not yet exist.");
             }
 
-            if (folder.FileExists(newFileName))
+            if (await folder.FileExistsAsync(newFileName))
             {
                 Console.WriteLine("Error: File must not yet exist.");
             }
 
-            newFile = await folder.GetFileReferenceAsync(newFolderName + "/" + newFileName);
+            newFile = folder.GetFileReference(newFolderName + "/" + newFileName);
             await newFile.WriteAsync(null);
 
-            if (!folder.FolderExists(newFolderName))
+            if (!await folder.FolderExistsAsync(newFolderName))
             {
                 Console.WriteLine("Error: Folder must now exist.");
             }
 
-            if (!folder.FileExists(newFolderName + "/" + newFileName))
+            if (!await folder.FileExistsAsync(newFolderName + "/" + newFileName))
             {
                 Console.WriteLine("Error: File must now exist.");
             }

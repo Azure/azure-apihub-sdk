@@ -43,39 +43,37 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public Task<IFileItem> GetFileReferenceAsync(string path, bool overwrite = true)
+        public IFileItem GetFileReference(string path, bool overwrite = true)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return Task.FromResult<IFileItem>(null);
+                return null;
             }
 
             path = AppendToPath(path);
 
-            return Task.FromResult<IFileItem>(            
-                new FileItem
-                {
-                    _path = path,
-                    _overwrite = overwrite,
-                    _cdpHelper = this._cdpHelper
-                });
+            return new FileItem
+            {
+                _path = path,
+                _overwrite = overwrite,
+                _cdpHelper = this._cdpHelper
+            };
         }
 
-        public Task<IFolderItem> GetFolderReferenceAsync(string path)
+        public IFolderItem GetFolderReference(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return Task.FromResult<IFolderItem>(null);
+                return null;
             }
 
             path = AppendToPath(path);
 
-            return Task.FromResult<IFolderItem>(
-                new FolderItem
-                {
-                    _path = path,
-                    _cdpHelper = this._cdpHelper
-                });
+            return new FolderItem
+            {
+                _path = path,
+                _cdpHelper = this._cdpHelper
+            };
         }
 
         public IFileWatcher CreateFileWatcher(FileWatcherType fileWatcherType, Func<IFileItem, object, Task> callback, object nextItem = null, int pollIntervalInSeconds = CdpConstants.DefaultFileWatcherIntervalInSeconds)
@@ -99,6 +97,12 @@ namespace Microsoft.Azure.ApiHub
                 if (string.IsNullOrEmpty(_handleId))
                 {
                     _handleId = GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null).GetAwaiter().GetResult();
+
+                    if(_handleId == null)
+                    {
+                        _cdpHelper.Logger.Error("Unable to get a reference to path: " + _path);
+                        return null;
+                    }
                 }
 
                 if (fileWatcherType == FileWatcherType.Created)
@@ -138,7 +142,7 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public async Task<FileTriggerInfo> CheckForFile(FileWatcherType fileWatcherType, object nextItem = null)
+        public async Task<FileTriggerInfo> CheckForFileAsync(FileWatcherType fileWatcherType, object nextItem = null)
         {
             Uri pollUri = null;
 
@@ -168,7 +172,8 @@ namespace Microsoft.Azure.ApiHub
                 }
             }
 
-            HttpResponseMessage response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
+            // Only the header is required and there is no need to read the entire file content which the connector returns.
+            HttpResponseMessage response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri, HttpCompletionOption.ResponseHeadersRead);
 
             Uri nextUri = response.Headers.Location; // poll next
             TimeSpan delay = new TimeSpan(0, 0, CdpConstants.DefaultFileWatcherIntervalInSeconds);
@@ -200,6 +205,10 @@ namespace Microsoft.Azure.ApiHub
                 {
                     delay = rt.Delta.Value;
                 }
+            }
+            else
+            {
+                _cdpHelper.Logger.Error("Unable to check for file, http status code: " + response.StatusCode.ToString());
             }
 
             return new FileTriggerInfo
@@ -270,7 +279,7 @@ namespace Microsoft.Azure.ApiHub
                             _handleId = nestedItem.Id
                         });
 
-                        var nestedFolder = await this.GetFolderItemAsync(nestedItem.Path, nestedItem.Id, _cdpHelper.RuntimeEndpoint, _cdpHelper.AccessTokenScheme, _cdpHelper.AccessToken, _cdpHelper.Logger);
+                        var nestedFolder = this.GetFolderReference(nestedItem.Path, nestedItem.Id, _cdpHelper.RuntimeEndpoint, _cdpHelper.AccessTokenScheme, _cdpHelper.AccessToken, _cdpHelper.Logger);
 
                         var items2 = await nestedFolder.ListAsync(includeSubdirectories);
 
@@ -321,7 +330,7 @@ namespace Microsoft.Azure.ApiHub
                 return null;
             }
 
-            IFileItem fileItem = await GetFileReferenceAsync(path);
+            IFileItem fileItem = GetFileReference(path);
 
             var result = await fileItem.GetMetadataAsync();
 

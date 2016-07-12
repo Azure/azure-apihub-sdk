@@ -52,7 +52,8 @@ namespace Microsoft.Azure.ApiHub
                 {
                     try
                     {
-                        response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri);
+                        // Only the header is required and there is no need to read the entire file content which the connector returns.
+                        response = await _cdpHelper.SendAsync(HttpMethod.Get, pollUri, HttpCompletionOption.ResponseHeadersRead);
                     }
                     catch(Exception ex)
                     {
