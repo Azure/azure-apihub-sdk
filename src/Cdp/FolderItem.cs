@@ -107,7 +107,17 @@ namespace Microsoft.Azure.ApiHub
 
                 if (fileWatcherType == FileWatcherType.Created)
                 {
-                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                    // FTP and SFTP connectors do not currently implement onnewfile trigger but instead onupdatefile trigger handles both file creates and updates.
+                    // This is a workaround to enable file create triggers for FTP and SFTP connections.
+                    // TODO: This needs to be removed if/when FTP and SFTP implement separate triggers for file create and updates.
+                    if (!IsFtpOrSftpApi())
+                    {
+                        pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                    }
+                    else
+                    {
+                        pollUri = _cdpHelper.MakeUri(CdpConstants.OnUpdateFileTemplate, _handleId);
+                    }
                 }
                 else if (fileWatcherType == FileWatcherType.Updated)
                 {
@@ -155,7 +165,15 @@ namespace Microsoft.Azure.ApiHub
 
                 if (fileWatcherType == FileWatcherType.Created)
                 {
-                    pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                    // TODO: This needs to be removed if/when FTP and SFTP implement separate triggers for file create and updates.
+                    if (!IsFtpOrSftpApi())
+                    {
+                        pollUri = _cdpHelper.MakeUri(CdpConstants.OnNewFileTemplate, _handleId);
+                    }
+                    else
+                    {
+                        pollUri = _cdpHelper.MakeUri(CdpConstants.OnUpdateFileTemplate, _handleId);
+                    }
                 }
                 else if (fileWatcherType == FileWatcherType.Updated)
                 {
@@ -456,6 +474,20 @@ namespace Microsoft.Azure.ApiHub
             }
 
             return null;
+        }
+
+        private bool IsFtpOrSftpApi()
+        {
+            string url = _cdpHelper.RuntimeEndpoint.AbsoluteUri;
+
+            if (url.IndexOf("/apim/ftp", StringComparison.OrdinalIgnoreCase) > 0 || url.IndexOf("/apim/sftp", StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
