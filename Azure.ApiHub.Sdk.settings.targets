@@ -11,12 +11,12 @@
   <Choose>
     <When Condition=" '$(IncludeBuildNumberInVersion)' == '1'">
       <PropertyGroup>
-        <ApiHubPackageVersion>0.6.9$(PrereleaseTag)-$(BUILD_NUMBER)</ApiHubPackageVersion>
+        <ApiHubPackageVersion>0.6.10$(PrereleaseTag)-$(BUILD_NUMBER)</ApiHubPackageVersion>
     </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <ApiHubPackageVersion>0.6.9$(PrereleaseTag)</ApiHubPackageVersion>
+        <ApiHubPackageVersion>0.6.10$(PrereleaseTag)</ApiHubPackageVersion>
       </PropertyGroup>
     </Otherwise>
   </Choose>
