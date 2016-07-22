@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     /// <summary>
     /// Filter functions that could be available on a table
     /// </summary>
     [DataContract]
-    public enum CapabilityFilterFunction
+    internal enum CapabilityFilterFunction
     {
         /// <summary>
         /// The equal filter predicate

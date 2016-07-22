@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Management;
 using Microsoft.Azure.ApiHub;
 using System.IO;
-using Microsoft.Azure.ApiHub.Sdk;
-using Microsoft.Azure.ApiHub.Sdk.Common;
-using Microsoft.Azure.ApiHub.Sdk.Table;
 using Newtonsoft.Json.Linq;
 
 namespace Azure.ApiHub.Sdk.Samples

@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     /// <summary>
     /// Represents the metadata for a table.
     /// </summary>
     [DataContract]
-    public class TableMetadata
+    internal class TableMetadata
     {
         /// <summary>
         /// Gets or sets the table name.

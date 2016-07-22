@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Table
+﻿using Protocol = Microsoft.Azure.ApiHub.Table.Protocol;
+
+namespace Microsoft.Azure.ApiHub
 {
     public enum CapabilityFilterFunction
     {

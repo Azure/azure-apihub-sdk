@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     /// <summary>
     /// Represents a table
     /// </summary>
     [DataContract]
-    public class Table
+    internal class Table
     {
         /// <summary>
         /// Gets or sets the table name

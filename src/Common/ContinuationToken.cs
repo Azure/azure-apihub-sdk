@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Common
+﻿namespace Microsoft.Azure.ApiHub
 {
     public class ContinuationToken
     {

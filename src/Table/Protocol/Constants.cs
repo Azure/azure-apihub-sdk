@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+﻿namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     internal static class Constants
     {

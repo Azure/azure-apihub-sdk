@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.ApiHub.Sdk.Table
+﻿namespace Microsoft.Azure.ApiHub
 {
     /// <summary>
     /// Defines a query to be executed against a tabular connector.

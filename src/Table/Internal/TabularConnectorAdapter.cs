@@ -1,13 +1,13 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Sdk.Common;
-using Microsoft.Azure.ApiHub.Sdk.Extensions;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Azure.ApiHub.Common;
+using Microsoft.Azure.ApiHub.Extensions;
+using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
+namespace Microsoft.Azure.ApiHub.Table.Internal
 {
     internal class TabularConnectorAdapter : ITabularConnectorAdapter
     {

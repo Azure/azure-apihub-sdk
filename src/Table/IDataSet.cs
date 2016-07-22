@@ -1,9 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Sdk.Common;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table
+namespace Microsoft.Azure.ApiHub
 {
     /// <summary>
     /// Defines a set of tables.
@@ -14,6 +13,11 @@ namespace Microsoft.Azure.ApiHub.Sdk.Table
         /// Gets the data set name.
         /// </summary>
         string DataSetName { get; }
+
+        /// <summary>
+        /// Gets the data set display name.
+        /// </summary>
+        string DisplayName { get; }
 
         /// <summary>
         /// Gets a reference to a table.

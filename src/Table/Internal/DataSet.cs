@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Sdk.Common;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
+namespace Microsoft.Azure.ApiHub.Table.Internal
 {
     public class DataSet : IDataSet
     {

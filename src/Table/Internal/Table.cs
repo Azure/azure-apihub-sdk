@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Sdk.Common;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Internal
+namespace Microsoft.Azure.ApiHub.Table.Internal
 {
     public class Table<TEntity> : ITable<TEntity>
         where TEntity: class

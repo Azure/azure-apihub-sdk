@@ -1,5 +1,5 @@
 ﻿
-namespace Microsoft.Azure.ApiHub.Sdk.Extensions
+namespace Microsoft.Azure.ApiHub.Extensions
 {
     internal static class ArrayExtensions
     {

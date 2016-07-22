@@ -1,9 +1,8 @@
 ﻿using System;
-using Microsoft.Azure.ApiHub.Sdk.Common;
-using Microsoft.Azure.ApiHub.Sdk.Table;
-using Microsoft.Azure.ApiHub.Sdk.Table.Internal;
+using Microsoft.Azure.ApiHub.Common;
+using Microsoft.Azure.ApiHub.Table.Internal;
 
-namespace Microsoft.Azure.ApiHub.Sdk
+namespace Microsoft.Azure.ApiHub
 {
     /// <summary>
     /// Represents a connection to an ApiHub connector.

@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     /// <summary>
     /// Represents a dataset
     /// </summary>
     [DataContract]
-    public class DataSet
+    internal class DataSet
     {
         /// <summary>
         /// Gets or sets the dataset name

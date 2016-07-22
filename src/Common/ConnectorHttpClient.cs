@@ -7,11 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Extensions;
-using Microsoft.Azure.ApiHub.Sdk.Extensions;
-using Microsoft.Azure.ApiHub.Sdk.Table;
 using Newtonsoft.Json;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Common
+namespace Microsoft.Azure.ApiHub.Common
 {
     // TODO: Add retry functionality.
     internal class ConnectorHttpClient

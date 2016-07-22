@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Table.Protocol
+namespace Microsoft.Azure.ApiHub.Table.Protocol
 {
     /// <summary>
     /// Represents the metadata for a table.
     /// </summary>
     [DataContract]
-    public class TableFilterRestrictionsMetadata
+    internal class TableFilterRestrictionsMetadata
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="TableFilterRestrictionsMetadata"/> is filterable.

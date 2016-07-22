@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Common
+namespace Microsoft.Azure.ApiHub
 {
     public class SegmentedResult<TItem>
     {

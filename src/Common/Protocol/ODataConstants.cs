@@ -1,5 +1,5 @@
 ﻿
-namespace Microsoft.Azure.ApiHub.Sdk.Common.Protocol
+namespace Microsoft.Azure.ApiHub.Common.Protocol
 {
     internal class ODataConstants
     {

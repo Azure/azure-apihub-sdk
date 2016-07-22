@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Azure.ApiHub.Sdk.Common
+namespace Microsoft.Azure.ApiHub.Common
 {
     internal class ConnectionSettings
     {
