@@ -35,7 +35,7 @@ namespace Microsoft.Azure.ApiHub
                 return null;
             }
 
-            path = System.IO.Path.Combine(_path, path.Replace("/", "\\"));
+            path = FixupPath(path);
 
             return new LocalFileItem
             {
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.ApiHub
                 return null;
             }
 
-            path = System.IO.Path.Combine(_path, path.Replace("/", "\\"));
+            path = FixupPath(path);
 
             return new LocalFolderItem
             {
@@ -94,9 +94,9 @@ namespace Microsoft.Azure.ApiHub
 
         public Task<IFileItem> GetFileItemAsync(string path)
         {
-            path = System.IO.Path.Combine(_path, path.Replace("/", "\\"));
+            path = FixupPath(path);
 
-            if(!File.Exists(path))
+            if (!File.Exists(path))
             {
                 return Task.FromResult<IFileItem>(null);
             }
@@ -112,7 +112,7 @@ namespace Microsoft.Azure.ApiHub
 
         public Task<IFolderItem> GetFolderItemAsync(string path)
         {
-            path = System.IO.Path.Combine(_path, path.Replace("/", "\\"));
+            path = FixupPath(path);
 
             if (!Directory.Exists(path))
             {
@@ -175,6 +175,16 @@ namespace Microsoft.Azure.ApiHub
             }
 
             return Task.FromResult(items.ToArray());
+        }
+
+        private string FixupPath(string path)
+        {
+            if (path.StartsWith("/") || path.StartsWith("\\"))
+            {
+                path = path.Substring(1);
+            }
+
+            return System.IO.Path.Combine(_path, path);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
         [Fact]
         public async Task ListTestsAsync()
         {
-            string cdpTestRoot = "tests/" + Guid.NewGuid().ToString();
+            string cdpTestRoot = "/tests/" + Guid.NewGuid().ToString();
             string fileName = Guid.NewGuid().ToString();
 
             var folder = _rootFolder.GetFolderReference(cdpTestRoot);
