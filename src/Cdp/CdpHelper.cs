@@ -69,7 +69,7 @@ namespace Microsoft.Azure.ApiHub
         public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, byte[] content = null)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, url);
-            AddAccessToken(request);
+            AddRequestHeaders(request);
 
             HttpResponseMessage response = null;
             try
@@ -159,9 +159,10 @@ namespace Microsoft.Azure.ApiHub
             return new Uri(this.RuntimeEndpoint.ToString() + x);
         }
 
-        private void AddAccessToken(HttpRequestMessage request)
+        private void AddRequestHeaders(HttpRequestMessage request)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue(_accessTokenScheme, _accessToken);
+            request.Headers.UserAgent.TryParseAdd(Extensions.HttpClientExtensions.GetUserAgent());
         }
 
         private async Task LogNonSuccessAsync(HttpResponseMessage response)

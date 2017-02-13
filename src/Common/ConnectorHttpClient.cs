@@ -56,7 +56,7 @@ namespace Microsoft.Azure.ApiHub.Common
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-            ApplyCredentials(request);
+            AddRequestHeaders(request);
 
             var response = await HttpClient.SendAsync(request, cancellationToken);
 
@@ -79,7 +79,7 @@ namespace Microsoft.Azure.ApiHub.Common
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-            ApplyCredentials(request);
+            AddRequestHeaders(request);
 
             var response = await HttpClient.SendAsync(request, cancellationToken);
 
@@ -98,7 +98,7 @@ namespace Microsoft.Azure.ApiHub.Common
         {
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
-            ApplyCredentials(request);
+            AddRequestHeaders(request);
 
             request.Content = new StringContent(
                 JsonConvert.SerializeObject(item), 
@@ -117,7 +117,7 @@ namespace Microsoft.Azure.ApiHub.Common
         {
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri);
 
-            ApplyCredentials(request);
+            AddRequestHeaders(request);
 
             request.Content = new StringContent(
                 JsonConvert.SerializeObject(item),
@@ -135,7 +135,7 @@ namespace Microsoft.Azure.ApiHub.Common
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
 
-            ApplyCredentials(request);
+            AddRequestHeaders(request);
 
             var response = await HttpClient.SendAsync(request, cancellationToken);
 
@@ -147,9 +147,10 @@ namespace Microsoft.Azure.ApiHub.Common
             response.EnsureSuccessStatusCode();
         }
 
-        protected virtual void ApplyCredentials(HttpRequestMessage request)
+        protected virtual void AddRequestHeaders(HttpRequestMessage request)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue(AccessTokenScheme, AccessToken);
+            request.Headers.UserAgent.TryParseAdd(Extensions.HttpClientExtensions.GetUserAgent());
         }
     }
 }

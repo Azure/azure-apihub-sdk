@@ -248,5 +248,26 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             await newFile.DeleteAsync();
             // TODO: Cdp needs to support deleting empty folders.
         }
+
+        [Fact]
+        public Task FileWatchOnNonExistenceFolderTestsAsync()
+        {
+            string cdpTestRoot = Guid.NewGuid().ToString();
+
+            var folder = _rootFolder.GetFolderReference(cdpTestRoot);
+
+            string fileName = Guid.NewGuid().ToString();
+
+            var poll = folder.CreateFileWatcher(FileWatcherType.Created,
+                (fr, obj) =>
+                {
+                    return Task.FromResult(0);
+                });
+
+            Assert.Null(poll);
+
+            return Task.FromResult(0);
+        }
+
     }
 }

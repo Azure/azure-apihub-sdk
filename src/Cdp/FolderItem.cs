@@ -98,7 +98,7 @@ namespace Microsoft.Azure.ApiHub
                 {
                     _handleId = GetHandleIdFromPathAsync(_cdpHelper.MakeUri(CdpConstants.TopMostFolderRoot), _path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries), 0, null).GetAwaiter().GetResult();
 
-                    if(_handleId == null)
+                    if(string.IsNullOrEmpty(_handleId))
                     {
                         _cdpHelper.Logger.Error("Unable to get a reference to path: " + _path);
                         return null;
@@ -134,7 +134,7 @@ namespace Microsoft.Azure.ApiHub
                 }
             }
 
-            if (_handleId != null || nextItem != null)
+            if (!string.IsNullOrEmpty(_handleId) || nextItem != null)
             {
                 Task tIgnore = poll.Run(pollUri);
 

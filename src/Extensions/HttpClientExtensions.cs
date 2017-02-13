@@ -14,6 +14,8 @@ namespace Microsoft.Azure.ApiHub.Extensions
     /// </summary>
     public static class HttpClientExtensions
     {
+        private const string DefaultUserAgent = "ApiHub SDK";
+
         #region Synchronous methods
         /// <summary>
         /// Sends a PUT request to the server with the provided JSON body synchronously.
@@ -68,6 +70,19 @@ namespace Microsoft.Azure.ApiHub.Extensions
                 return x.First();
             }
             return null;
+        }
+
+        public static string GetUserAgent()
+        {
+            var userAgent = DefaultUserAgent;
+            var appName = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+
+            if(!string.IsNullOrEmpty(appName))
+            {
+                userAgent = string.Format("{0} - {1}", userAgent, appName);
+            }
+
+            return userAgent;
         }
         #endregion Synchronous methods
 
