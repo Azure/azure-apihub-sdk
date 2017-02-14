@@ -8,7 +8,7 @@ namespace Microsoft.Azure.ApiHub
 {
     public class ItemFactory
     {
-        public static IFolderItem Parse(string connectionString, ILogger logger = null)
+        public static IFolderItem Parse(string connectionString, ILogger logger = null, string additionalContext = null)
         {
             Uri runtimeEndpoint;
             string accessTokenScheme;
@@ -27,7 +27,7 @@ namespace Microsoft.Azure.ApiHub
                 };
             }
 
-            var folderItem = New(runtimeEndpoint, accessTokenScheme, accessToken, logger ?? NoopLogger.Instance);
+            var folderItem = New(runtimeEndpoint, accessTokenScheme, accessToken, logger ?? NoopLogger.Instance, additionalContext);
 
             return folderItem;
         }
@@ -100,11 +100,11 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        private static IFolderItem New(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger)
+        private static IFolderItem New(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger, string additionalContext)
         {
             return new FolderItem
             {
-                _cdpHelper = new CdpHelper(runtimeEndpoint, scheme, accessToken, logger)
+                _cdpHelper = new CdpHelper(runtimeEndpoint, scheme, accessToken, logger, additionalContext)
             };
         }
     }

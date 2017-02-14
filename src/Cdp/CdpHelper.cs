@@ -19,6 +19,7 @@ namespace Microsoft.Azure.ApiHub
         private string _accessTokenScheme;
         private string _accessToken;
         private ILogger _logger;
+        private string _additionalContext;
 
         public Uri RuntimeEndpoint
         {
@@ -58,12 +59,13 @@ namespace Microsoft.Azure.ApiHub
             _httpClient.Timeout = TimeSpan.FromMinutes(10);
         }
 
-        public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger)
+        public CdpHelper(Uri runtimeEndpoint, string scheme, string accessToken, ILogger logger, string additionalContext = null)
         {
             _runtimeEndpoint = runtimeEndpoint;
             _accessTokenScheme = scheme;
             _accessToken = accessToken;
             _logger = logger;
+            _additionalContext = additionalContext;
         }
 
         public async Task<HttpResponseMessage> SendAsync(HttpMethod method, Uri url, HttpCompletionOption httpCompletionOption = HttpCompletionOption.ResponseContentRead, byte[] content = null)
@@ -162,7 +164,9 @@ namespace Microsoft.Azure.ApiHub
         private void AddRequestHeaders(HttpRequestMessage request)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue(_accessTokenScheme, _accessToken);
-            request.Headers.UserAgent.TryParseAdd(Extensions.HttpClientExtensions.GetUserAgent());
+
+            var userAgent = Extensions.HttpClientExtensions.GetUserAgent() + (!string.IsNullOrEmpty(_additionalContext) ? " - " + _additionalContext : string.Empty); 
+            request.Headers.UserAgent.TryParseAdd(userAgent);
         }
 
         private async Task LogNonSuccessAsync(HttpResponseMessage response)
