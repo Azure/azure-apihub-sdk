@@ -18,5 +18,7 @@ namespace Microsoft.Azure.ApiHub
         public FileWatcherType WatcherType { get; internal set; }
 
         public TimeSpan RetryAfter { get; internal set; }
+
+        public bool ShouldResetState { get; internal set; }
     }
 }

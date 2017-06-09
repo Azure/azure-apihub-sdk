@@ -135,6 +135,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
                     }
 
                     fileAddedTrigger = true;
+
                     return Task.FromResult(0);
                 }, null, 1 );
 
@@ -167,7 +168,21 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             Assert.True(fileAddedTrigger);
             Assert.True(fileUpdatedTrigger);
 
+            var triggerType = await folder.CheckForFileAsync(FileWatcherType.Created);
+
+            var fileName2 = Guid.NewGuid().ToString();
+            var newFile2 = folder.GetFileReference(fileName2);
+            await newFile2.WriteAsync(new byte[0]);
+
+            triggerType = await folder.CheckForFileAsync(FileWatcherType.Created, triggerType.NextUri);
+
+            if(triggerType.FileItem != null)
+            {
+                Assert.True(string.Equals(newFile2.Path, triggerType.FileItem.Path, StringComparison.OrdinalIgnoreCase));
+            }
+
             await newFile.DeleteAsync();
+            await newFile2.DeleteAsync();
             await initialFile.DeleteAsync();
         }
 

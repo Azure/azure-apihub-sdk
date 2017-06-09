@@ -196,6 +196,7 @@ namespace Microsoft.Azure.ApiHub
             Uri nextUri = response.Headers.Location; // poll next
             TimeSpan delay = new TimeSpan(0, 0, CdpConstants.DefaultFileWatcherIntervalInSeconds);
             IFileItem fileItem = null;
+            bool shouldResetState = false;
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -223,6 +224,13 @@ namespace Microsoft.Azure.ApiHub
                 {
                     delay = rt.Delta.Value;
                 }
+
+                var resetHeader = response.GetHeader("x-ms-trigger-reset");
+
+                if (resetHeader == "1")
+                {
+                    shouldResetState = true;
+                }
             }
             else
             {
@@ -234,7 +242,8 @@ namespace Microsoft.Azure.ApiHub
                 FileItem = fileItem,
                 NextUri = nextUri,
                 WatcherType = fileWatcherType,
-                RetryAfter = delay
+                RetryAfter = delay,
+                ShouldResetState = shouldResetState
             };
         }
 
