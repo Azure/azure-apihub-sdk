@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
+﻿using Microsoft.Azure.ApiHub.Extensions;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Extensions;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.ApiHub.Management
 {

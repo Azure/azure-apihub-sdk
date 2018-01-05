@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Common;
 
 namespace Microsoft.Azure.ApiHub
 {

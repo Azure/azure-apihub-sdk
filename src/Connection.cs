@@ -15,8 +15,7 @@ namespace Microsoft.Azure.ApiHub
         /// Purposed only for testing.
         /// </summary>
         protected Connection()
-        {
-        }
+        { }
 
         /// <summary>
         /// Creates a new instance of this class.
@@ -25,9 +24,7 @@ namespace Microsoft.Azure.ApiHub
         public Connection(string connectionString)
         {
             if (connectionString == null)
-            {
                 throw new ArgumentException("The connection string must not be null or empty", "connectionString");
-            }
 
             ConnectionSettings = ConnectionSettings.Parse(connectionString);
         }

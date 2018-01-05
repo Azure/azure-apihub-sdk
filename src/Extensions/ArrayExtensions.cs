@@ -7,5 +7,7 @@ namespace Microsoft.Azure.ApiHub.Extensions
         {
             return array ?? new T[0];
         }
+
+
     }
 }

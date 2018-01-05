@@ -16,7 +16,7 @@ namespace Microsoft.Azure.ApiHub.Table.Internal
         private ProtocolToModelConverter ProtocolToModel { get; set; }
 
         public TabularConnectorAdapter(
-            ConnectorHttpClient httpClient, 
+            ConnectorHttpClient httpClient,
             ProtocolToModelConverter protocolToModel)
         {
             HttpClient = httpClient;
@@ -28,9 +28,7 @@ namespace Microsoft.Azure.ApiHub.Table.Internal
             ContinuationToken continuationToken,
             CancellationToken cancellationToken)
         {
-            var requestUri = HttpClient.CreateRequestUri(
-                template: Protocol.Constants.DataSetsTemplate);
-
+            var requestUri = HttpClient.CreateRequestUri(template: Protocol.Constants.DataSetsTemplate);
             var result = await HttpClient.ListAsync<Protocol.DataSet>(requestUri, cancellationToken);
 
             return new SegmentedResult<IDataSet>
@@ -84,8 +82,8 @@ namespace Microsoft.Azure.ApiHub.Table.Internal
         }
 
         public async Task<TEntity> GetEntityAsync<TEntity>(
-            string dataSetName, 
-            string tableName, 
+            string dataSetName,
+            string tableName,
             string entityId,
             CancellationToken cancellationToken)
             where TEntity : class
@@ -166,7 +164,7 @@ namespace Microsoft.Azure.ApiHub.Table.Internal
         public async Task UpdateEntityAsync<TEntity>(
             string dataSetName,
             string tableName,
-            string entityId, 
+            string entityId,
             TEntity entity,
             CancellationToken cancellationToken)
             where TEntity : class

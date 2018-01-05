@@ -40,7 +40,7 @@ namespace Azure.ApiHub.Sdk.Samples
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
         }
-
+        
         public class SampleEntity
         {
             public int Id { get; set; }

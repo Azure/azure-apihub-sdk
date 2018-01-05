@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Microsoft.Azure.ApiHub.Extensions;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub.Extensions;
 
 namespace Microsoft.Azure.ApiHub
 {
@@ -35,13 +32,7 @@ namespace Microsoft.Azure.ApiHub
             }
         }
 
-        public string Path
-        {
-            get
-            {
-                return _path;
-            }
-        }
+        public string Path => _path;
 
         public IFileItem GetFileReference(string path, bool overwrite = true)
         {

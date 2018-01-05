@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Azure.ApiHub
@@ -21,37 +17,14 @@ namespace Microsoft.Azure.ApiHub
         private ILogger _logger;
         private string _additionalContext;
 
-        public Uri RuntimeEndpoint
-        {
-            get
-            {
-                return _runtimeEndpoint;
-            }
-        }
+        public Uri RuntimeEndpoint => _runtimeEndpoint;
 
-        public string AccessTokenScheme
-        {
-            get
-            {
-                return _accessTokenScheme;
-            }
-        }
 
-        public string AccessToken
-        {
-            get
-            {
-                return _accessToken;
-            }
-        }
+        public string AccessTokenScheme => _accessTokenScheme;
 
-        public ILogger Logger
-        {
-            get
-            {
-                return _logger;
-            }
-        }
+        public string AccessToken => _accessToken;
+
+        public ILogger Logger => _logger;
 
         static CdpHelper()
         {
@@ -81,9 +54,9 @@ namespace Microsoft.Azure.ApiHub
                     request.Content = new ByteArrayContent(content);
                 }
 
-                response = await _httpClient.SendAsync(request, httpCompletionOption);    
-                
-                if(!response.IsSuccessStatusCode)
+                response = await _httpClient.SendAsync(request, httpCompletionOption);
+
+                if (!response.IsSuccessStatusCode)
                 {
                     await LogNonSuccessAsync(response);
                 }
@@ -109,7 +82,7 @@ namespace Microsoft.Azure.ApiHub
                 await LogNonSuccessAsync(response);
             }
 
-            return new Tuple<TResult, HttpStatusCode>( result, response.StatusCode);
+            return new Tuple<TResult, HttpStatusCode>(result, response.StatusCode);
         }
 
         public async Task<byte[]> SendRawAsync(HttpMethod method, Uri url, byte[] content = null)
@@ -117,7 +90,7 @@ namespace Microsoft.Azure.ApiHub
             HttpResponseMessage response = await SendAsync(method, url, content: content);
             if (!response.IsSuccessStatusCode)
             {
-                if(response.StatusCode == HttpStatusCode.NotFound)
+                if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     return null;
                 }
@@ -140,7 +113,7 @@ namespace Microsoft.Azure.ApiHub
 
         public async Task<TResult> DecodeAsync<TResult>(HttpResponseMessage response)
         {
-            if(response.Content == null)
+            if (response.Content == null)
             {
                 return default(TResult);
             }
@@ -165,17 +138,15 @@ namespace Microsoft.Azure.ApiHub
         {
             request.Headers.Authorization = new AuthenticationHeaderValue(_accessTokenScheme, _accessToken);
 
-            var userAgent = Extensions.HttpClientExtensions.GetUserAgent() + (!string.IsNullOrEmpty(_additionalContext) ? " - " + _additionalContext : string.Empty); 
+            var userAgent = Extensions.HttpClientExtensions.GetUserAgent() + (!string.IsNullOrEmpty(_additionalContext) ? " - " + _additionalContext : string.Empty);
             request.Headers.UserAgent.TryParseAdd(userAgent);
         }
 
         private async Task LogNonSuccessAsync(HttpResponseMessage response)
         {
-            string content = "";
+            string content = string.Empty;
             if (response.Content != null)
-            {
                 content = await response.Content.ReadAsStringAsync();
-            }
 
             _logger.Error(string.Format("Request returned status: {0}, verb: {1}, message: {2}, uri: {3}", response.StatusCode, response.RequestMessage.Method, content, response.RequestMessage.RequestUri.AbsoluteUri));
         }

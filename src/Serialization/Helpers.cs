@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Azure.ApiHub.Serialization
 {
@@ -20,7 +17,7 @@ namespace Microsoft.Azure.ApiHub.Serialization
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
             object[] customAttributes = member.GetCustomAttributes(typeof(JsonPropertyAttribute), true);
-            if (Enumerable.Any<object>((IEnumerable<object>)customAttributes))
+            if (Enumerable.Any<object>(customAttributes))
             {
                 string propertyName = Enumerable.Single<JsonPropertyAttribute>(Enumerable.Cast<JsonPropertyAttribute>((IEnumerable)customAttributes)).PropertyName;
                 if (!string.IsNullOrEmpty(propertyName))
@@ -31,9 +28,10 @@ namespace Microsoft.Azure.ApiHub.Serialization
 
         protected override JsonDictionaryContract CreateDictionaryContract(Type objectType)
         {
+            // Fix PropertyNameResolver : https://github.com/JamesNK/Newtonsoft.Json/commit/0929c2b4c3349ae1fb3d22c522504fbf57c8268e
             JsonDictionaryContract dictionaryContract = base.CreateDictionaryContract(objectType);
-            if (Enumerable.Any<object>((IEnumerable<object>)objectType.GetCustomAttributes(typeof(JsonPreserveCaseDictionaryAttribute), true)))
-                dictionaryContract.PropertyNameResolver = (Func<string, string>)(propertyName => propertyName);
+            if (Enumerable.Any(objectType.GetCustomAttributes(typeof(JsonPreserveCaseDictionaryAttribute), true)))
+                dictionaryContract.DictionaryKeyResolver = propertyName => propertyName;
             return dictionaryContract;
         }
     }

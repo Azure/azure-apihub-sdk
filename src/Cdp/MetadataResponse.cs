@@ -26,7 +26,7 @@
         /// </value>
         public bool HasFileSupport
         {
-            get { return this.blob != null; }
+            get { return blob != null; }
         }
     }
 }

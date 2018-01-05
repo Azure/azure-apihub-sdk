@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Azure.ApiHub;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.ApiHub;
 
 namespace Azure.ApiHub.Sdk.Samples
 {
@@ -12,15 +8,8 @@ namespace Azure.ApiHub.Sdk.Samples
     {
         public TraceLevel Level
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public void Error(string message, Exception ex = null, string source = null)
