@@ -284,6 +284,5 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             return Task.FromResult(0);
         }
-
     }
 }
