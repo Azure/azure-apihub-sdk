@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Management.Entities;
 using Newtonsoft.Json.Linq;
-using CoreUriTemplate = UriTemplate.Core.UriTemplate;
+using Tavis.UriTemplates;
 
 namespace Microsoft.Azure.ApiHub.Management
 {
@@ -40,8 +40,19 @@ namespace Microsoft.Azure.ApiHub.Management
 
         private Uri BuildUri(Uri baseUri, string template, IDictionary<string, string> parameters)
         {
-            Uri templateUri = new Uri(baseUri, template);
-            return new CoreUriTemplate(templateUri.OriginalString).BindByName(parameters);
+            var uriTemplate = new UriTemplate(template, true);
+
+            // Add parameters one by one to avoid mismatch parameters count errors.
+            foreach (var key in parameters)
+            {
+                uriTemplate = uriTemplate.AddParameter(key.Key, key.Value);
+            }
+
+            var resolvedUri = uriTemplate.Resolve();
+
+            // Build complete URI.
+            Uri completeUri = new Uri(baseUri, resolvedUri);
+            return completeUri;
         }
 
         public async Task<ConnectionKey> GetConnectionKeyAsync(ConnectionId connection)

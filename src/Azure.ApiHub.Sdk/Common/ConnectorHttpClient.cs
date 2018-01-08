@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,12 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Extensions;
 using Newtonsoft.Json;
-using CoreUriTemplate = UriTemplate.Core.UriTemplate;
+using Tavis.UriTemplates;
 
 namespace Microsoft.Azure.ApiHub.Common
 {
     // TODO: Add retry functionality.
-    internal class ConnectorHttpClient
+    public class ConnectorHttpClient
     {
         private const string MediaTypeApplicationJson = "application/json";
 
@@ -40,23 +40,27 @@ namespace Microsoft.Azure.ApiHub.Common
         // TODO: Use continuation token.
         public virtual Uri CreateRequestUri(string template, NameValueCollection parameters = null, Query query = null, ContinuationToken continuationToken = null)
         {
-            var paramatersContainer = new Dictionary<string, string>();
+            var uriTemplate = new UriTemplate(template, true);
+
             if (parameters != null)
             {
+                // Add parameters one by one to avoid mismatch parameters count errors.
                 foreach (var key in parameters.AllKeys)
                 {
-                    paramatersContainer.Add(key, parameters[key]);
+                    uriTemplate = uriTemplate.AddParameter(key, parameters[key]);
                 }
             }
-            
-            var uriTemplate = new CoreUriTemplate(template)
-                .BindByName(RuntimeEndpoint, paramatersContainer);
-            
-            var uriBuilder = new UriBuilder(uriTemplate.AbsoluteUri)
+
+            var resolvedUri = uriTemplate.Resolve();
+
+            // Build complete URI.
+            Uri completeUri = new Uri(RuntimeEndpoint, resolvedUri);
+
+            var uriBuilder = new UriBuilder(completeUri.AbsoluteUri)
             {
                 Query = query.Coalesce().QueryString
             };
-
+            
             return uriBuilder.Uri;
         }
 
@@ -81,7 +85,7 @@ namespace Microsoft.Azure.ApiHub.Common
             return result;
         }
 
-        public virtual async Task<Protocol.ODataList<TItem>> ListAsync<TItem>(Uri requestUri, CancellationToken cancellationToken = default(CancellationToken))
+        internal virtual async Task<Protocol.ODataList<TItem>> ListAsync<TItem>(Uri requestUri, CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 

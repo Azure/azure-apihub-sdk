@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApiHub.Management.Entities;
 using Newtonsoft.Json.Linq;
-using CoreUriTemplate = UriTemplate.Core.UriTemplate;
+using Tavis.UriTemplates;
 
 namespace Microsoft.Azure.ApiHub.Management
 {
@@ -19,13 +19,24 @@ namespace Microsoft.Azure.ApiHub.Management
 
             const string template = "/subscriptions/{subscriptionId}/providers/Microsoft.Web/locations/{location}/managedApis/?api-version={apiVersion}";
             var parameters = new Dictionary<string, string>();
-            parameters["subscriptionId"] = this.subscriptionId;
-            parameters["location"] = this.location;
+            parameters["subscriptionId"] = subscriptionId;
+            parameters["location"] = location;
             parameters["apiVersion"] = ApiVersion;
 
-            Uri templateUri = new Uri(_managementEndpointUri, template);
-            Uri url = new CoreUriTemplate(templateUri.OriginalString).BindByName(parameters);
 
+            var uriTemplate = new UriTemplate(template, true);
+
+            // Add parameters one by one to avoid mismatch parameters count errors.
+            foreach (var key in parameters)
+            {
+                uriTemplate = uriTemplate.AddParameter(key.Key, key.Value);
+            }
+
+            var resolvedUri = uriTemplate.Resolve();
+
+            // Build complete URI.
+            Uri url = new Uri(_managementEndpointUri, resolvedUri);
+                        
             var json = await SendAsync<JObject>(HttpMethod.Get, url);
             var apis = json["value"].ToObject<ArmEnvelope<JToken>[]>();
 
