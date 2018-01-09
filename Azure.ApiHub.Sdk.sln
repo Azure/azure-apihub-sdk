@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFD496CE-0E4F-45A6-ABDA-0C151709CC2C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		build\common.props = build\common.props
 		LICENSE = LICENSE
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
