@@ -1,29 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.ApiHub.Sdk", "src\Azure.ApiHub.Sdk.csproj", "{F8356D27-805D-4ECD-95BF-8CC08063EB02}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F766ACD8-0972-4E45-848F-29CDE233F933}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\Azure.ApiHub.Sdk.nuspec = .nuget\Azure.ApiHub.Sdk.nuspec
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFD496CE-0E4F-45A6-ABDA-0C151709CC2C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		BuildPackage.cmd = BuildPackage.cmd
+		build\common.props = build\common.props
+		LICENSE = LICENSE
+		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.ApiHub.Sdk.Samples", "samples\Azure.ApiHub.Sdk.Samples\Azure.ApiHub.Sdk.Samples.csproj", "{99FED33F-B129-4E26-87B1-B7F770489A0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.ApiHub.Sdk.Samples", "samples\Azure.ApiHub.Sdk.Samples\Azure.ApiHub.Sdk.Samples.csproj", "{99FED33F-B129-4E26-87B1-B7F770489A0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DDDDAA7F-6D3B-43C6-BA2E-7CA4C7D94A4E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{40C67FD5-2292-4822-B324-7F54214E8FC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.ApiHub.Sdk.Tests", "test\Azure.ApiHub.Sdk.Tests\Azure.ApiHub.Sdk.Tests.csproj", "{09E20F71-7102-4692-84B1-A38274D05C7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.ApiHub.Sdk.Tests", "test\Azure.ApiHub.Sdk.Tests\Azure.ApiHub.Sdk.Tests.csproj", "{09E20F71-7102-4692-84B1-A38274D05C7B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{A97CB31A-0614-4C71-836D-D456A8431801}"
+	ProjectSection(SolutionItems) = preProject
+		samples\HttpTraces.txt = samples\HttpTraces.txt
+		samples\ManagedApis.ps1 = samples\ManagedApis.ps1
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.ApiHub.Sdk", "src\Azure.ApiHub.Sdk\Azure.ApiHub.Sdk.csproj", "{C5953368-EF35-4D69-9F33-654583A92B0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8356D27-805D-4ECD-95BF-8CC08063EB02}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99FED33F-B129-4E26-87B1-B7F770489A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,13 +41,20 @@ Global
 		{09E20F71-7102-4692-84B1-A38274D05C7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09E20F71-7102-4692-84B1-A38274D05C7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09E20F71-7102-4692-84B1-A38274D05C7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5953368-EF35-4D69-9F33-654583A92B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5953368-EF35-4D69-9F33-654583A92B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5953368-EF35-4D69-9F33-654583A92B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5953368-EF35-4D69-9F33-654583A92B0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F8356D27-805D-4ECD-95BF-8CC08063EB02} = {DDDDAA7F-6D3B-43C6-BA2E-7CA4C7D94A4E}
-		{99FED33F-B129-4E26-87B1-B7F770489A0B} = {DDDDAA7F-6D3B-43C6-BA2E-7CA4C7D94A4E}
+		{99FED33F-B129-4E26-87B1-B7F770489A0B} = {A97CB31A-0614-4C71-836D-D456A8431801}
 		{09E20F71-7102-4692-84B1-A38274D05C7B} = {40C67FD5-2292-4822-B324-7F54214E8FC9}
+		{C5953368-EF35-4D69-9F33-654583A92B0F} = {DDDDAA7F-6D3B-43C6-BA2E-7CA4C7D94A4E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A37E9276-5E76-43F7-A9BF-0D470EFBB34A}
 	EndGlobalSection
 EndGlobal

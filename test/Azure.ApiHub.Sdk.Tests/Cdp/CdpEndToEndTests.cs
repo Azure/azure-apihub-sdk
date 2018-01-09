@@ -38,30 +38,30 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             await file.WriteAsync(new byte[] { });
 
             IItem[] currentList = await folder.ListAsync(false);
-            Assert.Equal(currentList.Length, 1);
+            Assert.Single(currentList);
 
             currentList = await folder.ListAsync(true);
-            Assert.Equal(currentList.Length, 1);
+            Assert.Single(currentList);
 
             var nestedFolder = folder.GetFolderReference("nestedFolder");
             var file2 = nestedFolder.GetFileReference(fileName);
             await file2.WriteAsync(new byte[] { });
 
             currentList = await nestedFolder.ListAsync(true);
-            Assert.Equal(currentList.Length, 1);
+            Assert.Single(currentList);
 
             currentList = await folder.ListAsync(true);
-            Assert.Equal(currentList.Length, 3);
+            Assert.Equal(3, currentList.Length);
 
             await file2.DeleteAsync();
 
             currentList = await folder.ListAsync(true);
-            Assert.Equal(currentList.Length, 2);
+            Assert.Equal(2, currentList.Length);
 
             await file.DeleteAsync();
 
             currentList = await folder.ListAsync(true);
-            Assert.Equal(currentList.Length, 1);
+            Assert.Single(currentList);
         }
 
         [Fact]
@@ -77,8 +77,9 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             var content = "test\r\n";
             await file.WriteAsync(Encoding.Default.GetBytes(content));
 
-            Assert.True(file.Path.Contains(fileName));
-            Assert.True(file.Path.Contains(cdpTestRoot));
+
+            Assert.Contains(fileName, file.Path);
+            Assert.Contains(cdpTestRoot, file.Path);
 
             var retrievedContent = Encoding.Default.GetString(await file.ReadAsync());
 
@@ -86,7 +87,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             var metadata = await file.GetMetadataAsync();
 
-            Assert.Equal(metadata.IsFolder, false);
+            Assert.False(metadata.IsFolder);
 
             var currentLastModified = metadata.LastModified.ToUniversalTime();
 
@@ -126,7 +127,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             var poll = folder.CreateFileWatcher(FileWatcherType.Created,
                 (fr, obj) =>
                 {
-                    Assert.True(fr.Path.Contains(fileName));
+                    Assert.Contains(fileName, fr.Path);
 
                     var uri = obj as Uri;
                     if (uri != null)
@@ -137,12 +138,12 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
                     fileAddedTrigger = true;
 
                     return Task.FromResult(0);
-                }, null, 1 );
+                }, null, 1);
 
             var poll2 = folder.CreateFileWatcher(FileWatcherType.Updated,
                 (fr, obj) =>
                 {
-                    Assert.True(fr.Path.Contains(fileName));
+                    Assert.Contains(fileName, fr.Path);
 
                     var uri = obj as Uri;
                     if (uri != null)
@@ -176,9 +177,9 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             triggerType = await folder.CheckForFileAsync(FileWatcherType.Created, triggerType.NextUri);
 
-            if(triggerType.FileItem != null)
+            if (triggerType.FileItem != null)
             {
-                Assert.True(string.Equals(newFile2.Path, triggerType.FileItem.Path, StringComparison.OrdinalIgnoreCase));
+                Assert.Equal(newFile2.Path, triggerType.FileItem.Path, ignoreCase: true);
             }
 
             await newFile.DeleteAsync();
@@ -212,7 +213,7 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             // listing items for a folder which doesn't exist
             var listItems = await newFolder.ListAsync();
 
-            Assert.Equal(listItems.Length, 0);
+            Assert.Empty(listItems);
 
             var newFile = newFolder.GetFileReference(Guid.NewGuid().ToString());
 
@@ -224,9 +225,9 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             catch (Exception ex)
             {
                 // Expected exception was thrown when attempting to read from a file which doesn't exist.
-                Assert.IsType(typeof(FileNotFoundException), ex);
+                Assert.IsType<FileNotFoundException>(ex);
             }
-            
+
             var metadata = await newFile.GetMetadataAsync();
 
             // Metadata should be null for a file which doesn't exist.
@@ -241,12 +242,12 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
             metadata = await newFile.GetMetadataAsync();
 
             // empty file should have size of 0
-            Assert.Equal(metadata.Size, 0);
+            Assert.Equal(0, metadata.Size);
 
             await newFile.WriteAsync(new byte[] { 0 });
             metadata = await newFile.GetMetadataAsync();
 
-            Assert.Equal(metadata.Size, 1);
+            Assert.Equal(1, metadata.Size);
 
             string newFolderName = Guid.NewGuid().ToString();
             string newFileName = Guid.NewGuid().ToString();
@@ -283,6 +284,5 @@ namespace Microsoft.Azure.ApiHub.Tests.Cdp
 
             return Task.FromResult(0);
         }
-
     }
 }

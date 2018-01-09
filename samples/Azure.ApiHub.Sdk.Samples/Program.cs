@@ -40,7 +40,7 @@ namespace Azure.ApiHub.Sdk.Samples
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
         }
-
+        
         public class SampleEntity
         {
             public int Id { get; set; }
@@ -384,7 +384,7 @@ namespace Azure.ApiHub.Sdk.Samples
                 // trying to read from a file which doesn't exist should throw an exception.
                 var bytes = await newFile.ReadAsync();
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("Expected exception was thrown when attempting to read from a file which doesn't exist.");
             }
