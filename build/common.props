@@ -1,13 +1,13 @@
 <Project>
   <PropertyGroup>
     <DebugType>embedded</DebugType>
-    <Version>3.0.0-beta4$(VersionSuffix)</Version>
+    <Version>2.0.0-beta1$(VersionSuffix)</Version>
     <LatestCommit Condition="$(LatestCommit) == ''">$(CommitHash)</LatestCommit>
     <CommitHash Condition="$(CommitHash) == ''">N/A</CommitHash>
     <InformationalVersion>$(Version) Commit hash: $(CommitHash)</InformationalVersion>
-    <Authors>Microsoft</Authors>
+    <Authors>Azure App Service</Authors>
     <Company>Microsoft</Company>
-    <Product>Azure WebJobs SDK Extensions</Product>
+    <Product>Microsoft Azure ApiHub SDK</Product>
     <PackageProjectUrl>http://go.microsoft.com/fwlink/?LinkID=320972</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Azure/azure-apihub-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
